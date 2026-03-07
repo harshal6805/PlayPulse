@@ -60,18 +60,6 @@
   </div>
 
   <div id="app" class="app hidden">
-    <!-- PWA Install Banner -->
-    <div id="pwa-install-banner" class="pwa-install-banner hidden">
-      <div class="pwa-install-content">
-        <i class="fa-solid fa-download"></i>
-        <span>Install PlayPulse for a better experience!</span>
-      </div>
-      <div class="pwa-install-actions">
-        <button id="btn-pwa-install" class="btn-primary btn-sm">Install</button>
-        <button id="btn-pwa-dismiss" class="btn-ghost btn-sm">Dismiss</button>
-      </div>
-    </div>
-
     <!-- ======= SIDEBAR ======= -->
     <aside id="sidebar" class="sidebar">
       <div class="sidebar-header">
@@ -1019,6 +1007,23 @@
     })();
   </script>
   <script src="js/app.js"></script>
+
+  <!-- PWA Install Chip (fixed bottom-right) -->
+  <div id="pwa-install-banner" class="pwa-install-chip hidden" role="alert" aria-live="polite">
+    <div class="pwa-chip-icon">
+      <i class="fa-solid fa-mobile-screen-button"></i>
+    </div>
+    <div class="pwa-chip-body">
+      <span class="pwa-chip-title">Install PlayPulse</span>
+      <span class="pwa-chip-sub">Add to home screen for the best experience</span>
+    </div>
+    <button id="btn-pwa-install" class="pwa-chip-install-btn" aria-label="Install app">
+      Install
+    </button>
+    <button id="btn-pwa-dismiss" class="pwa-chip-close" aria-label="Dismiss install prompt">
+      <i class="fa-solid fa-xmark"></i>
+    </button>
+  </div>
 </body>
 
 </html>
