@@ -28,11 +28,11 @@ const EmailService = (() => {
       emailjs.init(EMAILJS_PUBLIC_KEY);
     } else {
       console.warn('[EmailService] MOCK MODE: EmailJS Public Key is missing.');
-      console.log('[EmailService] Content Target:', user.email);
+      // console.log('[EmailService] Content Target:', user.email);
       return;
     }
 
-    console.log(`[EmailService] Sending welcome email to: ${user.email}`);
+    // console.log(`[EmailService] Sending welcome email to: ${user.email}`);
 
     const templateParams = {
       user_name: user.displayName || 'Friend',
@@ -47,7 +47,7 @@ const EmailService = (() => {
         templateParams
       );
 
-      console.log('[EmailService] Welcome email sent successfully!', response.status, response.text);
+      // console.log('[EmailService] Welcome email sent successfully!', response.status, response.text);
     } catch (error) {
       console.error('[EmailService] Failed to send email:', error);
     }

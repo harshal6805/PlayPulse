@@ -83,7 +83,7 @@ const DashboardController = (() => {
 
     try {
       const candidates = await FirestoreOps.getResumeVideos();
-      console.log('[Resume] Firestore candidates:', candidates.length);
+      // console.log('[Resume] Firestore candidates:', candidates.length);
 
       // localStorage fallback — guarantees Resume works even if Firestore fields are missing
       if (candidates.length === 0) {
@@ -107,18 +107,18 @@ const DashboardController = (() => {
           });
         }
       }
-      console.log('[Resume] After LS fallback:', candidates.length);
+      // console.log('[Resume] After LS fallback:', candidates.length);
 
       if (!candidates.length) {
         // RESUME-4: Show empty state instead of hiding entirely
         resumeSection.classList.remove('hidden');
-        resumeCard.innerHTML = `
+        resumeCard.innerHTML = DOMPurify.sanitize(`
           <div class="empty-state resume-empty-state">
             <i class="fa-solid fa-forward" style="font-size:2rem;color:var(--text-muted);margin-bottom:8px"></i>
             <p>Start watching a video to unlock Resume!</p>
             <span style="font-size:.8rem;color:var(--text-muted)">Your in-progress videos will appear here for quick access.</span>
           </div>
-        `;
+        `);
         return;
       }
 
@@ -128,7 +128,7 @@ const DashboardController = (() => {
       resumeSection.classList.remove('hidden');
       resumeSection.classList.add('resume-hero-animate');
 
-      resumeCard.innerHTML = `
+      resumeCard.innerHTML = DOMPurify.sanitize(`
         <div class="resume-hero">
           <div class="resume-hero-thumb">
             ${top.thumbnail ? `<img src="${top.thumbnail}" alt="${top.title}" />` : '<div class="resume-thumb-placeholder"><i class="fa-solid fa-play"></i></div>'}
@@ -154,7 +154,7 @@ const DashboardController = (() => {
             </div>
           </div>
         </div>
-      `;
+      `);
 
       // Bind resume button
       document.getElementById('btn-smart-resume').addEventListener('click', () => {
@@ -221,7 +221,7 @@ const DashboardController = (() => {
   function renderDashboardPlaylists(playlists) {
     const container = document.getElementById('dashboard-playlists');
     if (!playlists.length) {
-      container.innerHTML = '<div class="empty-state"><i class="fa-solid fa-folder-open"></i><p>No playlists yet. Add your first one!</p><button class="btn-primary btn-sm" style="margin-top:12px" onclick="document.getElementById(\'add-playlist-modal\').classList.remove(\'hidden\')"><i class="fa-solid fa-plus"></i> Add Your First Playlist</button></div>';
+      container.innerHTML = DOMPurify.sanitize('<div class="empty-state"><i class="fa-solid fa-folder-open"></i><p>No playlists yet. Add your first one!</p><button class="btn-primary btn-sm" style="margin-top:12px" onclick="document.getElementById(\'add-playlist-modal\').classList.remove(\'hidden\')"><i class="fa-solid fa-plus"></i> Add Your First Playlist</button></div>', { ADD_ATTR: ['onclick'] });
       return;
     }
 
@@ -236,7 +236,7 @@ const DashboardController = (() => {
 
     const toShow = recentPlaylists.length ? recentPlaylists : playlists.slice(0, 3);
 
-    container.innerHTML = toShow.map(pl => {
+    container.innerHTML = DOMPurify.sanitize(toShow.map(pl => {
       const total = pl.totalVideos || 0;
       const done = pl.completedCount || 0;
       const pct = total > 0 ? Math.round((done / total) * 100) : 0;
@@ -266,7 +266,7 @@ const DashboardController = (() => {
           </div>
         </div>
       `;
-    }).join('');
+    }).join(''), { ADD_ATTR: ['onclick'] });
   }
 
   // ---------- FN-7: Watch History Timeline ----------
@@ -318,7 +318,7 @@ const DashboardController = (() => {
       function renderPage() {
         const slice = history.slice(0, visibleCount);
 
-        container.innerHTML = slice.map(item => {
+        container.innerHTML = DOMPurify.sanitize(slice.map(item => {
           const date = new Date(item.timestamp);
           const now = Date.now();
           const diffMs = now - item.timestamp;
@@ -346,16 +346,16 @@ const DashboardController = (() => {
               <span class="timeline-time">${timeAgo}</span>
             </div>
           `;
-        }).join('');
+        }).join(''));
 
         if (visibleCount < history.length) {
-          container.innerHTML += `
+          container.insertAdjacentHTML('beforeend', DOMPurify.sanitize(`
             <div style="text-align:center;margin-top:8px;">
               <button id="watch-history-show-more" class="btn-ghost btn-sm">
                 <i class="fa-solid fa-chevron-down"></i> Show more
               </button>
             </div>
-          `;
+          `));
         }
 
         container.querySelectorAll('.timeline-item').forEach(item => {

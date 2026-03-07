@@ -16,7 +16,7 @@ const Player = (() => {
   let initialSeekSeconds = 0; // RESUME-1: Seek position on player ready
 
   window.onYouTubeIframeAPIReady = () => {
-    console.log('YouTube IFrame API ready');
+    // console.log('YouTube IFrame API ready');
   };
 
   function open(playlistId, videoDocId, videoId, title, notes, opts = {}) {
@@ -32,7 +32,7 @@ const Player = (() => {
     document.getElementById('player-modal').classList.remove('hidden');
 
     const notesEditor = document.getElementById('notes-editor');
-    if (notesEditor) notesEditor.innerHTML = notes || '';
+    if (notesEditor) notesEditor.innerHTML = DOMPurify.sanitize(notes || '');
     Notes.setContext(playlistId, videoDocId);
 
     const container = document.getElementById('youtube-player-container');
@@ -213,11 +213,11 @@ const Player = (() => {
     const btn = document.getElementById('btn-mark-completed');
     if (!btn) return;
     if (completed) {
-      btn.innerHTML = '<i class="fa-solid fa-check-double"></i> Completed';
+      btn.innerHTML = DOMPurify.sanitize('<i class="fa-solid fa-check-double"></i> Completed');
       btn.style.opacity = '0.6';
       btn.disabled = true;
     } else {
-      btn.innerHTML = '<i class="fa-solid fa-check"></i> Mark Completed';
+      btn.innerHTML = DOMPurify.sanitize('<i class="fa-solid fa-check"></i> Mark Completed');
       btn.style.opacity = '1';
       btn.disabled = false;
     }
@@ -249,7 +249,7 @@ const Player = (() => {
     const overlay = document.createElement('div');
     const icon = direction === 'forward' ? 'fa-forward' : 'fa-backward';
     overlay.className = `skip-animation-overlay skip-${direction}`;
-    overlay.innerHTML = `<div class="skip-ripple"></div><div class="skip-label"><i class="fa-solid ${icon}"></i><span>${seconds}s</span></div>`;
+    overlay.innerHTML = DOMPurify.sanitize(`<div class="skip-ripple"></div><div class="skip-label"><i class="fa-solid ${icon}"></i><span>${seconds}s</span></div>`);
     wrapper.appendChild(overlay);
     setTimeout(() => overlay.remove(), 500);
   }
@@ -278,9 +278,9 @@ const Player = (() => {
         if (editor) {
           editor.classList.toggle('expanded');
           const isExpanded = editor.classList.contains('expanded');
-          expandNotesBtn.innerHTML = isExpanded
+          expandNotesBtn.innerHTML = DOMPurify.sanitize(isExpanded
             ? '<i class="fa-solid fa-compress"></i>'
-            : '<i class="fa-solid fa-expand"></i>';
+            : '<i class="fa-solid fa-expand"></i>');
           expandNotesBtn.title = isExpanded ? 'Collapse notes' : 'Expand notes';
         }
       });
@@ -302,9 +302,9 @@ const Player = (() => {
         if (content) {
           content.classList.toggle('pip-mode');
           const isPip = content.classList.contains('pip-mode');
-          pipBtn.innerHTML = isPip
+          pipBtn.innerHTML = DOMPurify.sanitize(isPip
             ? '<i class="fa-solid fa-expand"></i> Theater'
-            : '<i class="fa-solid fa-up-right-and-down-left-from-center"></i> PiP';
+            : '<i class="fa-solid fa-up-right-and-down-left-from-center"></i> PiP');
           // In PiP mode, allow clicking behind the modal overlay
           const modalOverlay = document.querySelector('#player-modal .modal-overlay');
           if (modalOverlay) modalOverlay.style.pointerEvents = isPip ? 'none' : 'auto';

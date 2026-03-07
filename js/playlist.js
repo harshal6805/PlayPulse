@@ -84,11 +84,11 @@ const PlaylistPage = (() => {
     const container = document.getElementById('playlists-container');
 
     if (!filtered.length) {
-      container.innerHTML = `<div class="empty-state"><i class="fa-solid fa-folder-open"></i><p>No playlists match your filters.</p><button class="btn-primary btn-sm" style="margin-top:12px" onclick="document.getElementById('add-playlist-modal').classList.remove('hidden')"><i class="fa-solid fa-plus"></i> Add Your First Playlist</button></div>`;
+      container.innerHTML = DOMPurify.sanitize(`<div class="empty-state"><i class="fa-solid fa-folder-open"></i><p>No playlists match your filters.</p><button class="btn-primary btn-sm" style="margin-top:12px" onclick="document.getElementById('add-playlist-modal').classList.remove('hidden')"><i class="fa-solid fa-plus"></i> Add Your First Playlist</button></div>`, { ADD_ATTR: ['onclick'] });
       return;
     }
 
-    container.innerHTML = filtered.map(pl => {
+    container.innerHTML = DOMPurify.sanitize(filtered.map(pl => {
       const total = pl.totalVideos || 0;
       const done = pl.completedCount || 0;
       const pctNum = total > 0 ? Math.round((done / total) * 100) : 0;
@@ -127,7 +127,7 @@ const PlaylistPage = (() => {
           </div>
         </div>
       `;
-    }).join('');
+    }).join(''), { ADD_ATTR: ['onclick'] });
   }
 
   /* ---------- Detail View ---------- */
@@ -166,7 +166,7 @@ const PlaylistPage = (() => {
       const badge = document.createElement('div');
       badge.id = 'completion-badge';
       badge.className = 'completion-date-badge';
-      badge.innerHTML = `<i class="fa-solid fa-circle-check"></i> Completed on ${completedDate.toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' })}`;
+      badge.innerHTML = DOMPurify.sanitize(`<i class="fa-solid fa-circle-check"></i> Completed on ${completedDate.toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' })}`);
       detailInfo.appendChild(badge);
     }
 
@@ -226,12 +226,12 @@ const PlaylistPage = (() => {
     const pageVideos = filteredVideos.slice(start, start + VIDEOS_PER_PAGE);
 
     if (!pageVideos.length) {
-      container.innerHTML = '<div class="empty-state"><i class="fa-solid fa-video-slash"></i><p>No videos match your filter.</p></div>';
+      container.innerHTML = DOMPurify.sanitize('<div class="empty-state"><i class="fa-solid fa-video-slash"></i><p>No videos match your filter.</p></div>');
       renderPagination();
       return;
     }
 
-    container.innerHTML = pageVideos.map((v, idx) => {
+    container.innerHTML = DOMPurify.sanitize(pageVideos.map((v, idx) => {
       const num = start + idx + 1;
       return `
         <div class="video-item ${v.completed ? 'completed' : ''}" data-id="${v.id}" onclick="PlaylistPage.openVideo('${v.id}')">
@@ -244,7 +244,7 @@ const PlaylistPage = (() => {
           <div class="video-check">${v.completed ? '<i class="fa-solid fa-check"></i>' : ''}</div>
         </div>
       `;
-    }).join('');
+    }).join(''), { ADD_ATTR: ['onclick'] });
 
     renderPagination();
   }
@@ -277,7 +277,7 @@ const PlaylistPage = (() => {
       html += `<button onclick="PlaylistPage.goToPage(${currentPage + 1})"><i class="fa-solid fa-chevron-right"></i></button>`;
     }
 
-    container.innerHTML = html;
+    container.innerHTML = DOMPurify.sanitize(html, { ADD_ATTR: ['onclick'] });
   }
 
   function goToPage(page) {
@@ -473,7 +473,7 @@ const PlaylistPage = (() => {
 
       if (!html) { suggestionsEl.classList.add('hidden'); return; }
 
-      suggestionsEl.innerHTML = html;
+      suggestionsEl.innerHTML = DOMPurify.sanitize(html, { ADD_ATTR: ['onclick'] });
       suggestionsEl.classList.remove('hidden');
 
       suggestionsEl.querySelectorAll('.tag-suggestion-item').forEach(item => {

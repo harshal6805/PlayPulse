@@ -77,8 +77,10 @@ const YouTubeAPI = (() => {
   async function fetchPlaylistItems(playlistId) {
     const items = [];
     let pageToken = '';
+    const delay = ms => new Promise(res => setTimeout(res, ms));
 
     do {
+      if (pageToken) await delay(200); // SECURITY (MED-3): Rate limit to prevent quota exhaustion
       const url = `https://www.googleapis.com/youtube/v3/playlistItems?part=snippet&maxResults=50&playlistId=${playlistId}&key=${YOUTUBE_API_KEY}${pageToken ? `&pageToken=${pageToken}` : ''}`;
       const res = await fetch(url);
       if (!res.ok) {
@@ -109,11 +111,15 @@ const YouTubeAPI = (() => {
   async function fetchVideoDurations(videoIds) {
     const durations = {};
     const chunks = [];
+    const delay = ms => new Promise(res => setTimeout(res, ms));
+
     for (let i = 0; i < videoIds.length; i += 50) {
       chunks.push(videoIds.slice(i, i + 50));
     }
 
-    for (const chunk of chunks) {
+    for (let i = 0; i < chunks.length; i++) {
+      if (i > 0) await delay(200); // SECURITY (MED-3): Rate limit between bulk chunks
+      const chunk = chunks[i];
       const ids = chunk.join(',');
       const url = `https://www.googleapis.com/youtube/v3/videos?part=contentDetails&id=${ids}&key=${YOUTUBE_API_KEY}`;
       const res = await fetch(url);

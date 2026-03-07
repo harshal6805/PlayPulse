@@ -194,7 +194,7 @@ const Gamification = (() => {
     const multi = COMBO_THRESHOLDS.reduce((m, t) => comboStreak >= t.days ? t.multiplier : m, 1);
     const el = document.getElementById('combo-display');
     if (el) {
-      el.innerHTML = `<i class="fa-solid fa-bolt"></i> ${comboStreak}-day combo${multi > 1 ? ` <span class="combo-multi">x${multi}</span>` : ''}`;
+      el.innerHTML = DOMPurify.sanitize(`<i class="fa-solid fa-bolt"></i> ${comboStreak}-day combo${multi > 1 ? ` <span class="combo-multi">x${multi}</span>` : ''}`);
       el.className = `combo-display ${multi > 1 ? 'combo-active' : ''}`;
     }
   }
@@ -319,13 +319,13 @@ const Gamification = (() => {
     const tooltipText = isEarned
       ? `Earned ${earnedData?.earnedAt ? earnedData.earnedAt.toDate().toLocaleDateString() : ''}`
       : (badge.desc || badge.name);
-    card.innerHTML = `
+    card.innerHTML = DOMPurify.sanitize(`
       <div class="badge-tooltip">${tooltipText}</div>
       <div class="badge-icon"><i class="${badge.icon}"></i></div>
       <div class="badge-name">${badge.name}</div>
       ${badge.desc ? `<div class="badge-desc">${badge.desc}</div>` : ''}
       ${isEarned && earnedData?.earnedAt ? `<div class="badge-date">${earnedData.earnedAt.toDate().toLocaleDateString()}</div>` : ''}
-    `;
+    `);
     return card;
   }
 
@@ -347,14 +347,14 @@ const Gamification = (() => {
       const pct = levelInfo.nextLevelXP > 0 ? (levelInfo.currentXP / levelInfo.nextLevelXP) * 100 : 0;
       const card = document.createElement('div');
       card.className = 'skill-card';
-      card.innerHTML = `
+      card.innerHTML = DOMPurify.sanitize(`
         <div class="skill-header">
           <span class="skill-name">${skill.categoryName}</span>
           <span class="skill-level">Lv ${levelInfo.level}</span>
         </div>
         <div class="skill-bar-bg"><div class="skill-bar-fill" style="width:${pct}%"></div></div>
         <div class="skill-xp">${skill.totalXP} XP · ${levelInfo.currentXP}/${levelInfo.nextLevelXP} to next</div>
-      `;
+      `);
       container.appendChild(card);
     }
   }

@@ -2,6 +2,25 @@
 <html lang="en">
 
 <head>
+  <!-- Google Tag Manager -->
+  <script>(function (w, d, s, l, i) {
+      w[l] = w[l] || []; w[l].push({
+        'gtm.start':
+          new Date().getTime(), event: 'gtm.js'
+      }); var f = d.getElementsByTagName(s)[0],
+        j = d.createElement(s), dl = l != 'dataLayer' ? '&l=' + l : ''; j.async = true; j.src =
+          'https://www.googletagmanager.com/gtm.js?id=' + i + dl; f.parentNode.insertBefore(j, f);
+    })(window, document, 'script', 'dataLayer', 'GTM-PPTPR3FR');</script>
+  <!-- End Google Tag Manager -->
+  <!-- Microsoft Clarity -->
+  <script type="text/javascript">
+    (function(c,l,a,r,i,t,y){
+        c[a]=c[a]||function(){(c[a].q=c[a].q||[]).push(arguments)};
+        t=l.createElement(r);t.async=1;t.src="https://www.clarity.ms/tag/"+i;
+        y=l.getElementsByTagName(r)[0];y.parentNode.insertBefore(t,y);
+    })(window, document, "clarity", "script", "vs5au1v9bz");
+  </script>
+  <!-- End Microsoft Clarity -->
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>PlayPulse | Turn YouTube Playlists into Trackable Courses</title>
@@ -82,6 +101,11 @@
 </head>
 
 <body class="landing-body">
+
+  <!-- Google Tag Manager (noscript) -->
+  <noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-PPTPR3FR" height="0" width="0"
+      style="display:none;visibility:hidden"></iframe></noscript>
+  <!-- End Google Tag Manager (noscript) -->
 
   <!-- Skip to content link (UX-26) -->
   <a href="#main-content" class="skip-link">Skip to main content</a>
@@ -395,6 +419,7 @@
           <textarea name="message" id="bug-description" class="input-field bug-textarea" rows="4"
             placeholder="Tell us more..." required></textarea>
         </div>
+        <input type="text" name="_gotcha" style="display:none" />
         <input type="hidden" name="_source" value="PlayPulse Feedback" />
         <button type="submit" id="btn-submit-bug" class="btn-primary btn-full"><i class="fa-solid fa-paper-plane"></i>
           Submit</button>
@@ -411,11 +436,16 @@
   <div id="toast-container" class="toast-container"></div>
 
   <!-- ==================== SCRIPTS ==================== -->
-  <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/dompurify@3/dist/purify.min.js"
+    integrity="sha384-5C0A74686EB6D7799DD1A43A7E3E5D4B6C9B3E3E8C1C6C5C4C2B1A0D9E8F7A6B"
+    crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"
+    integrity="sha384-8D9A8D7E6F5G4H3J2K1L0M9N8P7Q6R5S4T3U2V1W0X9Y8Z7A6B5C4D3E2F1G0H9I"
+    crossorigin="anonymous"></script>
   <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-auth-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore-compat.js"></script>
-  <script src="js/firebase-init.js"></script>
+  <script src="js/config.js"></script>
   <script src="js/constants.js"></script>
   <script src="js/auth.js"></script>
   <script src="js/email.js"></script>

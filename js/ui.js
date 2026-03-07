@@ -242,13 +242,13 @@ const UI = (() => {
       hint.classList.remove('hidden');
       if (val.includes('list=')) {
         hint.className = 'url-validation-hint valid';
-        hint.innerHTML = '<i class="fa-solid fa-circle-check"></i> Looks like a valid playlist URL';
+        hint.innerHTML = DOMPurify.sanitize('<i class="fa-solid fa-circle-check"></i> Looks like a valid playlist URL');
       } else if (val.includes('youtube.com/watch') || val.includes('youtu.be/')) {
         hint.className = 'url-validation-hint invalid';
-        hint.innerHTML = '<i class="fa-solid fa-triangle-exclamation"></i> Looks like a video URL - make sure to use a playlist URL with list= in it';
+        hint.innerHTML = DOMPurify.sanitize('<i class="fa-solid fa-triangle-exclamation"></i> Looks like a video URL - make sure to use a playlist URL with list= in it');
       } else {
         hint.className = 'url-validation-hint invalid';
-        hint.innerHTML = '<i class="fa-solid fa-circle-info"></i> Paste a full YouTube playlist URL';
+        hint.innerHTML = DOMPurify.sanitize('<i class="fa-solid fa-circle-info"></i> Paste a full YouTube playlist URL');
       }
     });
   }
@@ -330,7 +330,7 @@ function showToast(message, type = 'info') {
   if (!container) { console.log(`[Toast] ${type}: ${message}`); return; }
   const toast = document.createElement('div');
   toast.className = `toast ${type}`;
-  toast.innerHTML = `<i class="fa-solid ${type === 'success' ? 'fa-check' : type === 'error' ? 'fa-xmark' : type === 'warning' ? 'fa-triangle-exclamation' : 'fa-info-circle'}"></i> ${message}`;
+  toast.innerHTML = DOMPurify.sanitize(`<i class="fa-solid ${type === 'success' ? 'fa-check' : type === 'error' ? 'fa-xmark' : type === 'warning' ? 'fa-triangle-exclamation' : 'fa-info-circle'}"></i> ${message}`);
   container.appendChild(toast);
   setTimeout(() => { toast.classList.add('hide'); setTimeout(() => toast.remove(), 300); }, 3000);
 }

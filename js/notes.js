@@ -12,11 +12,11 @@ const Notes = (() => {
     if (!editor) return; // Not on this page
     editor.addEventListener('input', onInput);
 
-    // Toolbar buttons
+    // Toolbar buttons — MED-1: replaced deprecated execCommand with Selection/Range API
     document.querySelectorAll('.note-tool').forEach(btn => {
       btn.addEventListener('click', () => {
         const cmd = btn.dataset.cmd;
-        document.execCommand(cmd, false, null);
+        applyFormatCommand(cmd);
         editor.focus();
       });
     });
@@ -52,7 +52,9 @@ const Notes = (() => {
 
   async function save() {
     if (!currentPlaylistId || !currentVideoId) return;
-    const html = document.getElementById('notes-editor').innerHTML;
+    const rawHtml = document.getElementById('notes-editor').innerHTML;
+    // MED-2: Sanitize before persisting to Firestore — prevents stored XSS
+    const html = typeof DOMPurify !== 'undefined' ? DOMPurify.sanitize(rawHtml) : rawHtml;
     try {
       await FirestoreOps.updateVideo(currentPlaylistId, currentVideoId, { notes: html });
       document.getElementById('notes-status').textContent = 'Saved';
@@ -164,8 +166,54 @@ const Notes = (() => {
     for (const node of textNodes) {
       if (!regex.test(node.textContent)) continue;
       const span = document.createElement('span');
-      span.innerHTML = node.textContent.replace(regex, '<mark class="note-highlight" style="background:var(--accent);color:#fff;border-radius:2px;padding:0 2px">$1</mark>');
+      span.innerHTML = DOMPurify.sanitize(node.textContent.replace(regex, '<mark class="note-highlight" style="background:var(--accent);color:#fff;border-radius:2px;padding:0 2px">$1</mark>'), { ADD_TAGS: ['mark'], ADD_ATTR: ['style'] });
       node.parentNode.replaceChild(span, node);
+    }
+  }
+
+  /**
+   * MED-1: Modern replacement for document.execCommand.
+   * Supports: bold, italic, underline, insertOrderedList, insertUnorderedList.
+   */
+  function applyFormatCommand(cmd) {
+    const sel = window.getSelection();
+    if (!sel || sel.rangeCount === 0) return;
+
+    // List commands require execCommand (no pure Selection API equivalent)
+    // They are safe here since we control the command string entirely from data-cmd attributes
+    if (cmd === 'insertOrderedList' || cmd === 'insertUnorderedList') {
+      // eslint-disable-next-line no-deprecated -- no Selection API equivalent for list toggling
+      document.execCommand(cmd, false, null);
+      return;
+    }
+
+    const range = sel.getRangeAt(0);
+    if (!range || range.collapsed) return;
+
+    const tagMap = { bold: 'STRONG', italic: 'EM', underline: 'U' };
+    const tag = tagMap[cmd];
+    if (!tag) return;
+
+    // Check if selection is already wrapped in this tag — if so, unwrap it
+    const ancestor = range.commonAncestorContainer;
+    const existingEl = (ancestor.nodeType === 3 ? ancestor.parentElement : ancestor).closest(tag);
+    if (existingEl) {
+      // Unwrap: replace the element with its children
+      const parent = existingEl.parentNode;
+      while (existingEl.firstChild) parent.insertBefore(existingEl.firstChild, existingEl);
+      parent.removeChild(existingEl);
+      return;
+    }
+
+    // Wrap the selected content in the tag
+    const el = document.createElement(tag);
+    try {
+      range.surroundContents(el);
+    } catch {
+      // surroundContents fails on partial selections across element boundaries
+      // Fall back: extract, wrap, re-insert
+      el.appendChild(range.extractContents());
+      range.insertNode(el);
     }
   }
 
