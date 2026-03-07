@@ -1,0 +1,584 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Help & Getting Started | PlayPulse Support</title>
+    <meta name="description"
+        content="Need help with PlayPulse? Learn how to track YouTube playlists, take notes, earn XP, and use the Pomodoro timer. Your complete guide to smarter learning." />
+    <link rel="canonical" href="https://playpulse.app/help.html" />
+
+    <!-- Open Graph -->
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content="https://playpulse.app/help.html" />
+    <meta property="og:title" content="Help & Getting Started | PlayPulse Support" />
+    <meta property="og:description"
+        content="Master PlayPulse with our comprehensive guides and FAQs. Start tracking your learning progress today." />
+    <meta property="og:image" content="https://playpulse.app/assets/social-preview.png" />
+
+    <meta name="color-scheme" content="dark light" />
+    <meta name="theme-color" content="#2563eb" />
+    <link rel="icon" type="image/png" href="favicon/favicon-96x96.png" sizes="96x96" />
+    <link rel="icon" type="image/svg+xml" href="favicon/favicon.svg" />
+    <link rel="shortcut icon" href="favicon/favicon.ico" />
+    <link rel="apple-touch-icon" sizes="180x180" href="favicon/apple-touch-icon.png" />
+    <link rel="manifest" href="manifest.json" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap"
+        rel="stylesheet" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" />
+    <link rel="stylesheet" href="css/style.css" />
+    <link rel="stylesheet" href="css/landing.css" />
+
+    <!-- Structured Data (FAQ) -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "FAQPage",
+      "mainEntity": [
+        {
+          "@type": "Question",
+          "name": "Is PlayPulse really free?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Yes, 100% free. No hidden fees, no premium tier. Built as an open-source project."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "Do I need a YouTube API key?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "No. The app handles all API interactions for you. Just paste a playlist link and go."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "Is my data safe?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Your data is stored securely in Firebase. We use Google Authentication - no passwords stored on our end."
+          }
+        }
+      ]
+    }
+    </script>
+
+    <script>document.documentElement.setAttribute('data-theme', localStorage.getItem('playpulse_theme') || (matchMedia('(prefers-color-scheme:dark)').matches ? 'dark' : 'light'));</script>
+    <style>
+        .help-page {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 120px 24px 80px;
+        }
+
+        .help-back {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            margin-bottom: 24px;
+            font-size: .85rem;
+            color: var(--text-muted);
+            transition: var(--transition);
+        }
+
+        .help-back:hover {
+            color: var(--accent);
+        }
+
+        .help-page h1 {
+            margin-bottom: 8px;
+        }
+
+        .help-subtitle {
+            font-size: 1rem;
+            color: var(--text-secondary);
+            margin-bottom: 48px;
+            line-height: 1.6;
+        }
+
+        /* Quick Start Steps */
+        .qs-steps {
+            display: flex;
+            flex-direction: column;
+            gap: 0;
+            margin-bottom: 48px;
+            position: relative;
+        }
+
+        .qs-step {
+            display: flex;
+            gap: 20px;
+            align-items: flex-start;
+            padding: 24px 0;
+            position: relative;
+        }
+
+        .qs-step:not(:last-child)::after {
+            content: '';
+            position: absolute;
+            left: 23px;
+            top: 68px;
+            bottom: 0;
+            width: 2px;
+            background: var(--border-strong);
+        }
+
+        .qs-num {
+            width: 48px;
+            height: 48px;
+            flex-shrink: 0;
+            background: var(--accent);
+            color: #fff;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.1rem;
+            font-weight: 800;
+            position: relative;
+            z-index: 1;
+        }
+
+        .qs-content h3 {
+            font-size: 1rem;
+            font-weight: 700;
+            margin-bottom: 6px;
+        }
+
+        .qs-content p {
+            font-size: .88rem;
+            color: var(--text-secondary);
+            line-height: 1.7;
+        }
+
+        .qs-content .qs-tip {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            margin-top: 8px;
+            padding: 6px 12px;
+            background: var(--accent-soft);
+            color: var(--accent);
+            border-radius: var(--radius-sm);
+            font-size: .78rem;
+            font-weight: 600;
+        }
+
+        /* Feature Guide Sections */
+        .guide-section {
+            margin-bottom: 40px;
+        }
+
+        .guide-section h2 {
+            font-size: 1.15rem;
+            font-weight: 700;
+            margin-bottom: 16px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .guide-section h2 i {
+            font-size: 1.1rem;
+            opacity: .7;
+        }
+
+        .guide-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-lg);
+            padding: 24px;
+            margin-bottom: 12px;
+        }
+
+        .guide-card h4 {
+            font-size: .9rem;
+            font-weight: 700;
+            margin-bottom: 8px;
+        }
+
+        .guide-card p {
+            font-size: .85rem;
+            color: var(--text-secondary);
+            line-height: 1.7;
+        }
+
+        .guide-card ul {
+            padding-left: 18px;
+            margin-top: 8px;
+            list-style: disc;
+        }
+
+        .guide-card li {
+            font-size: .83rem;
+            color: var(--text-secondary);
+            line-height: 1.7;
+            margin-bottom: 4px;
+        }
+
+        /* Keyboard Shortcuts */
+        .shortcut-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 40px;
+        }
+
+        .shortcut-table th,
+        .shortcut-table td {
+            text-align: left;
+            padding: 12px 16px;
+            border-bottom: 1px solid var(--border);
+            font-size: .85rem;
+        }
+
+        .shortcut-table th {
+            color: var(--text-muted);
+            font-size: .75rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: .5px;
+        }
+
+        .shortcut-table td:first-child {
+            width: 100px;
+        }
+
+        .shortcut-table kbd {
+            display: inline-block;
+            padding: 3px 10px;
+            background: var(--bg-tertiary);
+            border: 1px solid var(--border-strong);
+            border-radius: var(--radius-sm);
+            font-size: .8rem;
+            font-weight: 600;
+            font-family: var(--font);
+            color: var(--text-primary);
+        }
+
+        /* Help CTA */
+        .help-cta {
+            text-align: center;
+            padding: 40px 24px;
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-lg);
+        }
+
+        .help-cta h2 {
+            font-size: 1.2rem;
+            margin-bottom: 8px;
+        }
+
+        .help-cta p {
+            font-size: .88rem;
+            color: var(--text-secondary);
+            margin-bottom: 20px;
+        }
+
+        .help-cta-buttons {
+            display: flex;
+            gap: 12px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        @media (max-width: 600px) {
+            .qs-step {
+                gap: 14px;
+            }
+
+            .qs-num {
+                width: 40px;
+                height: 40px;
+                font-size: .95rem;
+            }
+
+            .qs-step:not(:last-child)::after {
+                left: 19px;
+                top: 58px;
+            }
+        }
+    </style>
+</head>
+
+<body class="landing-body">
+
+    <!-- Navbar -->
+    <nav class="landing-nav" id="landing-nav">
+        <div class="nav-container">
+            <a href="index.html" class="nav-brand">
+                <img src="favicon/favicon.svg" alt="PlayPulse" class="nav-logo" />
+                <span>PlayPulse</span>
+            </a>
+            <div class="nav-actions">
+                <button id="btn-theme-toggle-landing" class="btn-theme-toggle" title="Toggle theme"
+                    aria-label="Switch to light mode" aria-pressed="false">
+                    <i class="fa-solid fa-moon"></i>
+                </button>
+            </div>
+        </div>
+    </nav>
+
+    <main class="help-page">
+        <a href="index.html" class="help-back"><i class="fa-solid fa-arrow-left"></i> Back to Home</a>
+        <h1>Help & Getting Started</h1>
+        <p class="help-subtitle">Everything you need to know to get the most out of PlayPulse. Up and running in under a
+            minute.</p>
+
+        <!-- ========== QUICK START ========== -->
+        <h2 style="font-size:1.25rem;margin-bottom:8px"><i class="fa-solid fa-bolt"
+                style="color:var(--warning);margin-right:6px"></i> Quick Start</h2>
+        <p style="font-size:.88rem;color:var(--text-secondary);margin-bottom:24px">Three steps to go from zero to
+            tracking your first playlist:</p>
+
+        <div class="qs-steps">
+            <div class="qs-step">
+                <div class="qs-num">1</div>
+                <div class="qs-content">
+                    <h3>Sign in with Google</h3>
+                    <p>Click "Get Started" on the homepage and sign in with your Google account. It takes one click — no
+                        passwords to remember, and your data syncs across all your devices instantly.</p>
+                </div>
+            </div>
+            <div class="qs-step">
+                <div class="qs-num">2</div>
+                <div class="qs-content">
+                    <h3>Add a YouTube Playlist</h3>
+                    <p>Go to the <strong>Playlists</strong> tab and click <strong>"Add Playlist"</strong>. Paste any
+                        YouTube playlist URL. PlayPulse will automatically fetch all videos, thumbnails, and durations
+                        for you.</p>
+                    <span class="qs-tip"><i class="fa-solid fa-lightbulb"></i> Tip: You can also add playlists from the
+                        Dashboard</span>
+                </div>
+            </div>
+            <div class="qs-step">
+                <div class="qs-num">3</div>
+                <div class="qs-content">
+                    <h3>Watch, Track & Earn XP</h3>
+                    <p>Click any video to open the built-in player. Videos auto-mark as complete when you finish them.
+                        Take notes, earn XP, build streaks, and watch your progress bar hit 100%!</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- ========== FEATURE GUIDES ========== -->
+        <div class="guide-section">
+            <h2><i class="fa-solid fa-gauge-high"></i> Dashboard</h2>
+            <div class="guide-card">
+                <h4>Your Learning Hub</h4>
+                <p>The Dashboard is your home screen. At a glance you can see:</p>
+                <ul>
+                    <li><strong>Daily Stats</strong> — Minutes studied, videos completed, current streak, and total XP
+                    </li>
+                    <li><strong>Daily Goal</strong> — Set a study goal (in minutes) and track your progress through the
+                        day</li>
+                    <li><strong>Smart Resume</strong> — Jump right back to the last video you were watching</li>
+                    <li><strong>Recent Playlists</strong> — Quick access to your most active playlists</li>
+                    <li><strong>Weekly Chart</strong> — Visual overview of your study patterns this week</li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="guide-section">
+            <h2><i class="fa-solid fa-list"></i> Playlists & Videos</h2>
+            <div class="guide-card">
+                <h4>Managing Playlists</h4>
+                <p>Each playlist can be tagged and prioritized (High / Medium / Low). Use filters to find playlists
+                    quickly. Click the edit icon to:</p>
+                <ul>
+                    <li><strong>Sync with YouTube</strong> — Fetch new videos added to the playlist</li>
+                    <li><strong>Mark All Done / Reset</strong> — Bulk-complete or reset all videos</li>
+                    <li><strong>Export Data</strong> — Download your progress as a JSON file</li>
+                </ul>
+            </div>
+            <div class="guide-card">
+                <h4>Watching Videos</h4>
+                <p>Click any video to open the built-in player. You can:</p>
+                <ul>
+                    <li>Adjust playback speed (0.75x to 5x)</li>
+                    <li>Use Picture-in-Picture mode</li>
+                    <li>Navigate between videos with Prev / Next buttons</li>
+                    <li>Take rich-text notes that auto-save to the cloud</li>
+                    <li>Export notes as Markdown</li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="guide-section">
+            <h2><i class="fa-solid fa-chart-line"></i> Analytics</h2>
+            <div class="guide-card">
+                <h4>Track Your Progress</h4>
+                <p>The Analytics tab gives you a deep look at your learning habits:</p>
+                <ul>
+                    <li><strong>365-Day Heatmap</strong> — GitHub-style activity heatmap showing daily study activity
+                    </li>
+                    <li><strong>Weekly Study Minutes</strong> — Bar chart of your study time over the past week</li>
+                    <li><strong>Monthly Completions</strong> — How many videos you've completed each month</li>
+                    <li><strong>Total Hours Over Time</strong> — Cumulative watch time chart</li>
+                    <li><strong>XP Growth</strong> — Track your XP progression over time</li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="guide-section">
+            <h2><i class="fa-solid fa-trophy"></i> XP, Streaks & Achievements</h2>
+            <div class="guide-card">
+                <h4>Gamification System</h4>
+                <p>PlayPulse rewards consistent learning:</p>
+                <ul>
+                    <li><strong>XP</strong> — Earn experience points for completing videos. Level up as you accumulate
+                        XP.</li>
+                    <li><strong>Streaks</strong> — Complete at least one video per day to maintain your streak. Miss a
+                        day? Use a streak recovery token.</li>
+                    <li><strong>Combos</strong> — Study on consecutive days to build your combo multiplier: <strong>3+
+                            days = 2x XP</strong>, <strong>7+ days = 3x XP</strong>.</li>
+                    <li><strong>Badges</strong> — Unlock achievements like "First Blood" (first video), "Marathon" (10
+                        videos in a day), and more.</li>
+                    <li><strong>Skill Tree</strong> — Visual progression system tied to your overall progress.</li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="guide-section">
+            <h2><i class="fa-solid fa-hourglass-half"></i> Pomodoro Timer</h2>
+            <div class="guide-card">
+                <h4>Stay Focused</h4>
+                <p>The built-in Pomodoro timer helps you study in focused intervals:</p>
+                <ul>
+                    <li>Default: <strong>25 minutes focus</strong>, <strong>5 minutes break</strong> (customizable)</li>
+                    <li>Access from the topbar clock icon or the floating action button</li>
+                    <li>Optional: auto-start when you play a video</li>
+                    <li>Sound notifications when sessions end (can be muted)</li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- ========== KEYBOARD SHORTCUTS ========== -->
+        <div class="guide-section">
+            <h2><i class="fa-solid fa-keyboard"></i> Keyboard Shortcuts</h2>
+            <table class="shortcut-table">
+                <thead>
+                    <tr>
+                        <th>Key</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><kbd>R</kbd></td>
+                        <td>Resume last video</td>
+                    </tr>
+                    <tr>
+                        <td><kbd>N</kbd></td>
+                        <td>Add new playlist</td>
+                    </tr>
+                    <tr>
+                        <td><kbd>?</kbd></td>
+                        <td>Show keyboard shortcuts help</td>
+                    </tr>
+                    <tr>
+                        <td><kbd>Esc</kbd></td>
+                        <td>Close any open modal or dialog</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <!-- ========== STILL NEED HELP ========== -->
+        <div class="help-cta">
+            <h2>Still need help?</h2>
+            <p>Can't find what you're looking for? Reach out — we'd love to help.</p>
+            <div class="help-cta-buttons">
+                <a href="index.html" class="btn-primary"><i class="fa-solid fa-comment-dots"></i> Send Feedback</a>
+                <a href="about.html" class="btn-ghost"><i class="fa-solid fa-info-circle"></i> About PlayPulse</a>
+            </div>
+        </div>
+    </main>
+
+    <!-- ==================== FOOTER ==================== -->
+    <footer class="landing-footer">
+        <div class="container footer-inner">
+            <div class="footer-brand">
+                <img src="favicon/favicon.svg" alt="" class="footer-logo-img" />
+                <span>PlayPulse</span>
+            </div>
+            <div class="footer-links">
+                <a href="privacy.html">Privacy Policy</a>
+                <a href="terms.html">Terms of Service</a>
+                <a href="about.html">About</a>
+                <a href="help.html">Help</a>
+                <a href="https://github.com" target="_blank" rel="noopener noreferrer"><i
+                        class="fa-brands fa-github"></i>
+                    GitHub</a>
+                <a href="#" id="btn-report-bug-landing" class="footer-bug-link"><i class="fa-solid fa-comment-dots"></i>
+                    Feedback & Bug Report</a>
+            </div>
+            <p class="footer-copy">&copy; 2026 PlayPulse</p>
+        </div>
+    </footer>
+
+    <!-- Feedback & Bug Report Modal -->
+    <div id="bug-report-modal" class="modal hidden">
+        <div class="modal-overlay" id="bug-report-overlay"></div>
+        <div class="modal-content bug-report-modal-content">
+            <button class="btn-close-modal" id="btn-close-bug-report"><i class="fa-solid fa-xmark"></i></button>
+            <h3 class="modal-title"><i class="fa-solid fa-comment-dots"></i> Feedback & Bug Report</h3>
+            <p class="bug-report-desc">Have feedback or found a bug? We'd love to hear from you.</p>
+            <form id="bug-report-form" class="form" action="https://formspree.io/f/mlgpewjl" method="POST">
+                <div class="form-group">
+                    <label for="bug-type">Type</label>
+                    <select name="type" id="bug-type" class="select-field">
+                        <option value="Bug Report">🐛 Bug Report</option>
+                        <option value="Feature Request">💡 Feature Request</option>
+                        <option value="General Feedback">💬 General Feedback</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="bug-email">Your Email</label>
+                    <input type="email" name="email" id="bug-email" class="input-field" placeholder="you@example.com"
+                        required />
+                </div>
+                <div class="form-group">
+                    <label for="bug-subject">Subject</label>
+                    <input type="text" name="subject" id="bug-subject" class="input-field" placeholder="Brief summary"
+                        required />
+                </div>
+                <div class="form-group">
+                    <label for="bug-description">Description</label>
+                    <textarea name="message" id="bug-description" class="input-field bug-textarea" rows="4"
+                        placeholder="Tell us more..." required></textarea>
+                </div>
+                <input type="hidden" name="_source" value="PlayPulse Feedback" />
+                <button type="submit" id="btn-submit-bug" class="btn-primary btn-full"><i
+                        class="fa-solid fa-paper-plane"></i>
+                    Submit</button>
+            </form>
+            <div id="bug-report-success" class="bug-report-success hidden">
+                <i class="fa-solid fa-circle-check"></i>
+                <p>Thank you! Your feedback has been submitted.</p>
+                <button class="btn-ghost btn-sm" id="btn-bug-report-done">Close</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ==================== TOAST ==================== -->
+    <div id="toast-container" class="toast-container"></div>
+
+    <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore-compat.js"></script>
+    <script src="js/firebase-init.js"></script>
+    <script src="js/constants.js"></script>
+    <script src="js/auth.js"></script>
+    <script src="js/ui.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            UI.initLanding();
+        });
+    </script>
+</body>
+
+</html>

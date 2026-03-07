@@ -1,0 +1,37 @@
+{
+  "name": "PlayPulse | YouTube Playlist Tracker",
+  "short_name": "PlayPulse",
+  "start_url": "/app.html",
+  "display": "standalone",
+  "background_color": "#0f1115",
+  "theme_color": "#2563eb",
+  "description": "Turn any YouTube playlist into a trackable course. Mark progress, take notes, and stay focused.",
+  "categories": [
+    "education",
+    "productivity",
+    "utilities"
+  ],
+  "screenshots": [
+    {
+      "src": "assets/social-preview.png",
+      "sizes": "1200x630",
+      "type": "image/png",
+      "form_factor": "wide",
+      "label": "PlayPulse Dashboard"
+    }
+  ],
+  "icons": [
+    {
+      "src": "favicon/web-app-manifest-192x192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "favicon/web-app-manifest-512x512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ]
+}

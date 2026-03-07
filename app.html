@@ -1,0 +1,999 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Dashboard | PlayPulse</title>
+  <meta name="description"
+    content="Your PlayPulse dashboard. Track your playlists, view analytics, and manage your learning progress." />
+  <meta name="robots" content="noindex, nofollow" />
+  <meta name="color-scheme" content="dark light" />
+  <meta name="theme-color" content="#2563eb" />
+  <link rel="icon" type="image/png" href="favicon/favicon-96x96.png" sizes="96x96" />
+  <link rel="icon" type="image/svg+xml" href="favicon/favicon.svg" />
+  <link rel="shortcut icon" href="favicon/favicon.ico" />
+  <link rel="apple-touch-icon" sizes="180x180" href="favicon/apple-touch-icon.png" />
+  <link rel="manifest" href="manifest.json" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap"
+    rel="stylesheet" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" />
+  <link rel="stylesheet" href="css/style.css" />
+  <link rel="stylesheet" href="css/app.css" />
+  <script>document.documentElement.setAttribute('data-theme', localStorage.getItem('playpulse_theme') || (matchMedia('(prefers-color-scheme:dark)').matches ? 'dark' : 'light'));</script>
+</head>
+
+<body>
+  <!-- Skip to content link (UX-26) -->
+  <a href="#main-content" class="skip-link">Skip to main content</a>
+
+  <!-- Auth Loading Screen -->
+  <div id="auth-loading" class="auth-loading">
+    <div class="spinner-lg"></div>
+    <p>Loading your dashboard...</p>
+  </div>
+
+  <div id="app" class="app hidden">
+    <!-- PWA Install Banner -->
+    <div id="pwa-install-banner" class="pwa-install-banner hidden">
+      <div class="pwa-install-content">
+        <i class="fa-solid fa-download"></i>
+        <span>Install PlayPulse for a better experience!</span>
+      </div>
+      <div class="pwa-install-actions">
+        <button id="btn-pwa-install" class="btn-primary btn-sm">Install</button>
+        <button id="btn-pwa-dismiss" class="btn-ghost btn-sm">Dismiss</button>
+      </div>
+    </div>
+
+    <!-- ======= SIDEBAR ======= -->
+    <aside id="sidebar" class="sidebar">
+      <div class="sidebar-header">
+        <a href="#" class="sidebar-brand" data-tab="dashboard">
+          <img src="favicon/favicon.svg" alt="PlayPulse" class="sidebar-logo-img" />
+          <span class="sidebar-title">PlayPulse</span>
+        </a>
+        <button id="btn-sidebar-toggle" class="btn-sidebar-toggle" title="Toggle sidebar">
+          <i class="fa-solid fa-bars"></i>
+        </button>
+      </div>
+
+      <nav class="sidebar-nav">
+        <a href="#" class="nav-item active" data-tab="dashboard" title="Dashboard">
+          <i class="fa-solid fa-gauge-high"></i><span>Dashboard</span>
+        </a>
+        <a href="#" class="nav-item" data-tab="playlists" title="Playlists">
+          <i class="fa-solid fa-list"></i><span>Playlists</span>
+        </a>
+        <a href="#" class="nav-item" data-tab="analytics" title="Analytics">
+          <i class="fa-solid fa-chart-line"></i><span>Analytics</span>
+        </a>
+        <a href="#" class="nav-item" data-tab="profile" title="Profile">
+          <i class="fa-solid fa-user"></i><span>Profile</span>
+        </a>
+      </nav>
+
+      <div class="sidebar-footer">
+        <div class="sidebar-xp">
+          <div class="xp-level">
+            <span class="level-badge">Lv <span id="sidebar-level">1</span></span>
+            <span class="xp-text"><span id="sidebar-xp">0</span> XP</span>
+          </div>
+          <div class="xp-bar-container">
+            <div id="sidebar-xp-bar" class="xp-bar" style="width:0%"></div>
+          </div>
+        </div>
+        <div class="sidebar-streak">
+          <i class="fa-solid fa-fire"></i>
+          <span id="sidebar-streak">0</span> day streak
+        </div>
+      </div>
+    </aside>
+
+    <!-- ======= MAIN CONTENT ======= -->
+    <main class="main-content" id="main-content">
+      <header class="topbar">
+        <button id="btn-mobile-menu" class="btn-mobile-menu" aria-label="Open navigation menu" aria-expanded="false">
+          <i class="fa-solid fa-bars"></i>
+        </button>
+        <h2 class="page-title" id="page-title"><img src="favicon/favicon.svg" alt="" class="page-title-logo" />
+          Dashboard</h2>
+        <div class="topbar-right">
+          <span id="offline-badge" class="offline-badge hidden"><i class="fa-solid fa-triangle-exclamation"></i>
+            Offline</span>
+          <div class="global-search-wrapper">
+            <i class="fa-solid fa-magnifying-glass global-search-icon"></i>
+            <input type="search" id="global-search-input" class="global-search-input"
+              placeholder="Search playlists & videos..." autocomplete="off" />
+            <div id="global-search-results" class="global-search-results hidden"></div>
+          </div>
+          <button id="btn-pomodoro-topbar" class="btn-pomodoro-topbar" title="Pomodoro Timer">
+            <i class="fa-solid fa-hourglass-half"></i>
+            <span class="pomo-indicator" id="pomo-indicator"></span>
+          </button>
+          <button id="btn-theme-topbar" class="btn-theme-topbar" title="Toggle theme" aria-label="Switch to light mode"
+            aria-pressed="false">
+            <i class="fa-solid fa-moon"></i>
+          </button>
+          <div class="topbar-user" id="topbar-user" role="button" tabindex="0" aria-haspopup="true"
+            aria-expanded="false">
+            <img id="topbar-avatar" class="topbar-avatar" src="" alt="User" />
+            <span id="topbar-name" class="topbar-name"></span>
+            <i class="fa-solid fa-chevron-down topbar-caret"></i>
+            <div class="user-dropdown">
+              <button class="user-dropdown-item" id="btn-dropdown-profile">
+                <i class="fa-solid fa-user"></i> Profile
+              </button>
+              <div class="user-dropdown-divider"></div>
+              <button id="btn-logout" class="user-dropdown-item danger">
+                <i class="fa-solid fa-right-from-bracket"></i> Logout
+              </button>
+            </div>
+          </div>
+        </div>
+      </header>
+
+      <!-- ==================== TAB: DASHBOARD ==================== -->
+      <section id="tab-dashboard" class="page-content tab-panel active">
+        <!-- Daily Stats -->
+        <div class="stats-grid">
+          <div class="stat-card">
+            <div class="stat-icon"><i class="fa-solid fa-clock"></i></div>
+            <div class="stat-info">
+              <span class="stat-value" id="stat-minutes-today">0</span>
+              <span class="stat-label">Minutes Today</span>
+            </div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-icon"><i class="fa-solid fa-circle-check"></i></div>
+            <div class="stat-info">
+              <span class="stat-value" id="stat-videos-today">0</span>
+              <span class="stat-label">Videos Today</span>
+            </div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-icon"><i class="fa-solid fa-fire"></i></div>
+            <div class="stat-info">
+              <span class="stat-value" id="stat-streak">0</span>
+              <span class="stat-label">Day Streak</span>
+            </div>
+            <button id="btn-streak-recovery" class="btn-streak-recovery hidden" title="Use streak recovery token">
+              <i class="fa-solid fa-shield-heart"></i> Recover
+            </button>
+          </div>
+          <div class="stat-card">
+            <div class="stat-icon"><i class="fa-solid fa-star"></i></div>
+            <div class="stat-info">
+              <span class="stat-value" id="stat-total-xp">0</span>
+              <span class="stat-label">Total XP</span>
+            </div>
+          </div>
+          <div class="stat-card combo-stat-card">
+            <div class="stat-icon"><i class="fa-solid fa-bolt"></i></div>
+            <div class="stat-info">
+              <div id="combo-display" class="combo-display"><i class="fa-solid fa-bolt"></i> 0-day combo</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Daily Study Goal -->
+        <div id="goal-section" class="dashboard-section">
+          <div class="section-header">
+            <h3 class="section-title"><i class="fa-solid fa-bullseye"></i> Daily Goal</h3>
+            <button class="btn-ghost btn-sm" id="btn-edit-goal" title="Edit goal"><i
+                class="fa-solid fa-pen"></i></button>
+          </div>
+          <div class="goal-card">
+            <div class="goal-info">
+              <span class="goal-label" id="goal-label">0 / 60 min</span>
+              <span class="goal-message" id="goal-message">Get started!</span>
+            </div>
+            <div class="goal-bar-container">
+              <div class="goal-bar" id="goal-bar" style="width:0%"></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Resume -->
+        <div class="dashboard-section hidden" id="resume-section">
+          <div class="section-title-row">
+            <h3 class="section-title"><i class="fa-solid fa-bolt"></i> Resume</h3>
+            <span class="shortcut-hint" title="Press R to resume">R</span>
+          </div>
+          <div id="resume-card" class="resume-card"></div>
+        </div>
+
+        <!-- My Playlists -->
+        <div class="dashboard-section">
+          <div class="section-header">
+            <h3 class="section-title"><i class="fa-solid fa-list"></i> Recent Playlists</h3>
+            <div class="section-header-actions">
+              <button class="btn-secondary btn-sm btn-open-add-playlist">
+                <i class="fa-solid fa-plus"></i> Add Playlist
+              </button>
+              <button class="btn-ghost btn-sm" id="btn-dashboard-view-all">
+                View All <i class="fa-solid fa-arrow-right"></i>
+              </button>
+            </div>
+          </div>
+          <div id="dashboard-playlists" class="playlists-grid">
+            <div class="empty-state">
+              <i class="fa-solid fa-folder-open"></i>
+              <p>No playlists yet. Add your first one!</p>
+              <button class="btn-primary btn-sm btn-open-add-playlist" style="margin-top:12px">
+                <i class="fa-solid fa-plus"></i> Add Your First Playlist
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Watch History Timeline (FN-7) -->
+        <div class="dashboard-section" id="watch-history-section">
+          <h3 class="section-title"><i class="fa-solid fa-clock-rotate-left"></i> Recent Activity</h3>
+          <div id="watch-history-container" class="watch-history-timeline"></div>
+        </div>
+
+        <!-- Weekly Chart -->
+        <div class="dashboard-section">
+          <h3 class="section-title"><i class="fa-solid fa-calendar-days"></i> This Week</h3>
+          <div class="chart-container">
+            <canvas id="chart-weekly-dashboard"></canvas>
+          </div>
+        </div>
+      </section>
+
+      <!-- ==================== TAB: PLAYLISTS ==================== -->
+      <section id="tab-playlists" class="page-content tab-panel">
+        <!-- List View -->
+        <div id="playlists-list-view">
+          <div class="page-actions">
+            <button id="btn-add-playlist" class="btn-primary"><i class="fa-solid fa-plus"></i> Add Playlist</button>
+            <div class="filter-group">
+              <select id="filter-tag" class="select-field">
+                <option value="">All Tags</option>
+              </select>
+              <select id="filter-priority" class="select-field">
+                <option value="">All Priorities</option>
+                <option value="High">High</option>
+                <option value="Medium">Medium</option>
+                <option value="Low">Low</option>
+              </select>
+            </div>
+          </div>
+          <div id="playlists-container" class="playlists-grid">
+            <div class="empty-state">
+              <i class="fa-solid fa-folder-open"></i>
+              <p>No playlists yet. Add your first one!</p>
+              <button class="btn-primary btn-sm btn-open-add-playlist" style="margin-top:12px">
+                <i class="fa-solid fa-plus"></i> Add Your First Playlist
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Detail View -->
+        <div id="playlist-detail-view" class="hidden">
+          <div class="detail-header">
+            <div class="detail-header-top">
+              <button id="btn-back-playlists" class="btn-ghost"><i class="fa-solid fa-arrow-left"></i> All
+                Playlists</button>
+              <a id="detail-yt-link" class="detail-yt-link" href="#" target="_blank" rel="noopener noreferrer"
+                style="display:none"><i class="fa-brands fa-youtube"></i> Open on YouTube</a>
+            </div>
+            <div class="detail-title-row">
+              <h3 id="detail-playlist-title" class="detail-title"></h3>
+              <button class="btn-ghost btn-sm" id="btn-edit-current-playlist" title="Edit Playlist"><i
+                  class="fa-solid fa-pen"></i></button>
+            </div>
+            <div class="detail-meta">
+              <span id="detail-tag" class="tag-badge"></span>
+              <span id="detail-priority" class="priority-badge"></span>
+              <span class="detail-separator"></span>
+              <span class="detail-stat"><i class="fa-solid fa-video"></i> <span id="detail-total">0</span> videos</span>
+              <span class="detail-stat"><i class="fa-solid fa-circle-check"></i> <span id="detail-completed">0</span>
+                done</span>
+              <span class="detail-stat"><i class="fa-solid fa-clock"></i> <span id="detail-remaining-time">0h 0m</span>
+                left</span>
+            </div>
+            <div class="detail-progress-row">
+              <div class="progress-bar-container">
+                <div id="detail-progress-bar" class="progress-bar" style="width:0%"></div>
+              </div>
+              <span class="detail-progress-pct" id="detail-progress-text"></span>
+            </div>
+          </div>
+          <div class="detail-actions">
+            <div class="filter-group">
+              <select id="video-filter" class="select-field">
+                <option value="all">Show All</option>
+                <option value="completed">Completed</option>
+                <option value="incomplete">Incomplete</option>
+              </select>
+              <select id="video-sort" class="select-field">
+                <option value="default">Default Order</option>
+                <option value="duration-asc">Duration ↑</option>
+                <option value="duration-desc">Duration ↓</option>
+                <option value="newest">Newest</option>
+                <option value="oldest">Oldest</option>
+              </select>
+              <input type="search" id="video-search" class="input-field" placeholder="Search videos..."
+                style="max-width:220px" />
+            </div>
+
+          </div>
+          <div id="videos-container" class="videos-list"></div>
+          <div id="videos-pagination" class="pagination hidden"></div>
+        </div>
+      </section>
+
+      <!-- ==================== TAB: ANALYTICS ==================== -->
+      <section id="tab-analytics" class="page-content tab-panel">
+        <div class="analytics-summary-row">
+          <div class="analytics-summary-card asc-streak">
+            <div class="analytics-summary-icon"><i class="fa-solid fa-fire"></i></div>
+            <div class="analytics-summary-text">
+              <span class="analytics-summary-value" id="analytics-best-streak">0</span>
+              <span class="analytics-summary-label">DAY STREAK</span>
+            </div>
+          </div>
+          <div class="analytics-summary-card asc-playlists">
+            <div class="analytics-summary-icon"><i class="fa-solid fa-list"></i></div>
+            <div class="analytics-summary-text">
+              <span class="analytics-summary-value" id="analytics-avg-week">0</span>
+              <span class="analytics-summary-label">PLAYLISTS</span>
+            </div>
+          </div>
+          <div class="analytics-summary-card asc-videos">
+            <div class="analytics-summary-icon"><i class="fa-solid fa-circle-check"></i></div>
+            <div class="analytics-summary-text">
+              <span class="analytics-summary-value" id="analytics-completed">0</span>
+              <span class="analytics-summary-label">VIDEOS DONE</span>
+            </div>
+          </div>
+          <div class="analytics-summary-card asc-time">
+            <div class="analytics-summary-icon"><i class="fa-solid fa-clock"></i></div>
+            <div class="analytics-summary-text">
+              <span class="analytics-summary-value" id="analytics-total-hours">0h</span>
+              <span class="analytics-summary-label">WATCH TIME</span>
+            </div>
+          </div>
+        </div>
+        <div class="chart-card" id="heatmap-card">
+          <h3 class="chart-title"><i class="fa-solid fa-calendar-days"></i> Study Activity (365 Days)</h3>
+          <div id="heatmap-container" class="heatmap-container"></div>
+          <div class="heatmap-legend">
+            <span class="heatmap-legend-label">Less</span>
+            <div class="heat-cell heat-l0"></div>
+            <div class="heat-cell heat-l1"></div>
+            <div class="heat-cell heat-l2"></div>
+            <div class="heat-cell heat-l3"></div>
+            <div class="heat-cell heat-l4"></div>
+            <span class="heatmap-legend-label">More</span>
+          </div>
+        </div>
+        <div class="analytics-grid">
+          <div class="chart-card">
+            <h3 class="chart-title"><i class="fa-solid fa-stopwatch"></i> Weekly Study Minutes</h3>
+            <canvas id="chart-weekly"></canvas>
+          </div>
+          <div class="chart-card">
+            <h3 class="chart-title"><i class="fa-solid fa-circle-check"></i> Monthly Video Completions</h3>
+            <canvas id="chart-monthly"></canvas>
+          </div>
+          <div class="chart-card">
+            <h3 class="chart-title"><i class="fa-solid fa-clock"></i> Total Hours Over Time</h3>
+            <canvas id="chart-hours"></canvas>
+          </div>
+          <div class="chart-card">
+            <h3 class="chart-title"><i class="fa-solid fa-star"></i> XP Growth</h3>
+            <canvas id="chart-xp"></canvas>
+          </div>
+
+        </div>
+      </section>
+
+      <!-- ==================== TAB: PROFILE ==================== -->
+      <section id="tab-profile" class="page-content tab-panel">
+        <div class="profile-container">
+
+          <!-- Profile Header -->
+          <div class="profile-card">
+            <div class="profile-header">
+              <img id="profile-avatar" src="assets/avatar-default.png" alt="Avatar" class="profile-avatar-lg">
+              <div class="profile-info">
+                <h2 id="profile-name" class="profile-name">User Name</h2>
+                <p id="profile-email" class="profile-email">email@example.com</p>
+                <div class="profile-joined">
+                  <i class="fa-solid fa-calendar-days"></i>
+                  <span>Joined <span id="profile-joined-date">March 2024</span></span>
+                </div>
+                <div class="profile-header-actions">
+                  <button id="btn-edit-profile" class="btn btn-primary" onclick="showSection('settings')">
+                    <i class="fa-solid fa-pen"></i> Edit Profile
+                  </button>
+                  <button id="btn-profile-logout" class="btn btn-ghost">
+                    <i class="fa-solid fa-right-from-bracket"></i> Logout
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Desktop Grid: Level and Momentum side-by-side -->
+          <div class="profile-grid-desktop">
+            <!-- Level Display -->
+            <div class="profile-level-card">
+              <div class="level-big-badge">Level <span id="profile-level">0</span></div>
+              <div id="profile-level-title" class="level-title-inline">NOVICE</div>
+              <div class="xp-progress-row">
+                <div class="xp-bar-container xp-bar-lg">
+                  <div id="profile-xp-bar" class="xp-bar" style="width: 0%"></div>
+                </div>
+                <span class="xp-progress-label"><span id="profile-current-level-xp">0</span> / <span
+                    id="profile-next-xp">100</span> XP</span>
+              </div>
+              <p class="xp-total-label"><span id="profile-total-xp">0</span> XP earned in total</p>
+            </div>
+
+            <!-- Momentum / Combo Display -->
+            <div class="momentum-card">
+              <div class="momentum-header-row">
+                <div id="profile-combo-display" class="combo-display"></div>
+              </div>
+              <div class="momentum-content-grid">
+                <div class="momentum-info">
+                  <p>Complete videos on consecutive days to build your combo and earn XP multipliers!</p>
+                </div>
+                <ul class="momentum-tiers">
+                  <li><span class="tier-label">3+ days</span> <span class="tier-multiplier">x2 XP</span></li>
+                  <li><span class="tier-label">7+ days</span> <span class="tier-multiplier">x3 XP</span></li>
+                </ul>
+              </div>
+            </div>
+          </div>
+
+          <!-- Stats Quick View -->
+          <div class="profile-stats-grid">
+            <div class="stat-card">
+              <div class="stat-icon"><i class="fa-solid fa-fire"></i></div>
+              <div class="stat-content">
+                <span class="stat-value" id="profile-streak">0</span>
+                <span class="stat-label">Day Streak</span>
+              </div>
+            </div>
+            <div class="stat-card">
+              <div class="stat-icon"><i class="fa-solid fa-list"></i></div>
+              <div class="stat-content">
+                <span class="stat-value" id="profile-playlists">0</span>
+                <span class="stat-label">Playlists</span>
+              </div>
+            </div>
+            <div class="stat-card">
+              <div class="stat-icon"><i class="fa-solid fa-circle-check"></i></div>
+              <div class="stat-content">
+                <span class="stat-value" id="profile-videos-done">0</span>
+                <span class="stat-label">Videos Done</span>
+              </div>
+            </div>
+            <div class="stat-card">
+              <div class="stat-icon"><i class="fa-solid fa-clock"></i></div>
+              <div class="stat-content">
+                <span class="stat-value" id="profile-watch-time">0h</span>
+                <span class="stat-label">Watch Time</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Achievements Section -->
+          <div class="profile-section">
+            <h3 class="section-title"><i class="fa-solid fa-trophy"></i> Achievements</h3>
+            <div id="profile-badges-grid" class="badges-grid"></div>
+          </div>
+
+          <!-- Skill Tree Section -->
+          <div class="profile-section">
+            <h3 class="section-title"><i class="fa-solid fa-diagram-project"></i> Skill Tree</h3>
+            <div id="skill-tree-grid" class="skill-tree-grid"></div>
+          </div>
+
+          <!-- Feedback & Bug Report -->
+          <div class="report-bug-wrapper">
+            <button id="btn-report-bug-profile" class="btn-report-bug" title="Feedback & Bug Report">
+              <i class="fa-solid fa-comment-dots"></i> Feedback & Bug Report
+            </button>
+          </div>
+
+        </div> <!-- End profile-container -->
+
+      </section>
+    </main>
+  </div>
+
+  <!-- ======= SHARED MODALS ======= -->
+
+  <!-- Player Modal -->
+  <div id="player-modal" class="modal hidden">
+    <div class="modal-overlay"></div>
+    <div class="modal-content player-modal-content">
+      <button id="btn-close-player" class="btn-close-modal"><i class="fa-solid fa-xmark"></i></button>
+      <div class="player-wrapper">
+        <div id="youtube-player-container"></div>
+      </div>
+      <div class="player-scroll-area">
+        <div class="player-info">
+          <h3 id="player-video-title"></h3>
+          <div class="player-controls">
+            <button id="btn-player-prev" class="btn-ghost btn-sm" title="Previous video"><i
+                class="fa-solid fa-backward-step"></i> Prev</button>
+            <button id="btn-pip-toggle" class="btn-pip-toggle" title="Picture-in-Picture"><i
+                class="fa-solid fa-up-right-and-down-left-from-center"></i> PiP</button>
+            <div class="speed-control"><label>Speed</label><select id="playback-speed-select"
+                class="select-field native-select">
+                <option value="0.75">0.75x</option>
+                <option value="1" selected>1x</option>
+                <option value="1.25">1.25x</option>
+                <option value="1.5">1.5x</option>
+                <option value="1.75">1.75x</option>
+                <option value="2">2x</option>
+                <option value="2.5">2.5x</option>
+                <option value="3">3x</option>
+                <option value="4">4x</option>
+                <option value="5">5x</option>
+              </select></div>
+            <button id="btn-mark-completed" class="btn-primary btn-sm"><i class="fa-solid fa-check"></i> Mark
+              Completed</button>
+            <button id="btn-player-next" class="btn-ghost btn-sm" title="Next video">Next <i
+                class="fa-solid fa-forward-step"></i></button>
+          </div>
+        </div>
+        <div class="notes-section">
+          <div class="notes-title-row">
+            <h4 class="notes-title"><i class="fa-solid fa-sticky-note"></i> Notes</h4>
+            <button id="btn-expand-notes" class="btn-ghost btn-sm" title="Expand notes"><i
+                class="fa-solid fa-expand"></i></button>
+          </div>
+          <div id="notes-toolbar" class="notes-toolbar">
+            <button class="note-tool" data-cmd="bold" title="Bold"><i class="fa-solid fa-bold"></i></button>
+            <button class="note-tool" data-cmd="italic" title="Italic"><i class="fa-solid fa-italic"></i></button>
+            <button class="note-tool" data-cmd="insertUnorderedList" title="Bullet List"><i
+                class="fa-solid fa-list-ul"></i></button>
+            <button class="note-tool" data-cmd="insertOrderedList" title="Numbered List"><i
+                class="fa-solid fa-list-ol"></i></button>
+            <button class="note-tool" data-cmd="removeFormat" title="Clear Formatting"><i
+                class="fa-solid fa-text-slash"></i></button>
+          </div>
+          <div id="notes-editor" class="notes-editor" contenteditable="true" placeholder="Add your notes here..."
+            role="textbox" aria-multiline="true" aria-label="Video notes"></div>
+          <div class="notes-actions">
+            <button id="btn-export-notes" class="btn-ghost btn-sm" title="Export notes as Markdown"><i
+                class="fa-solid fa-download"></i> Export .md</button>
+            <span id="notes-status" class="notes-status">Saved</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Add Playlist Modal -->
+  <div id="add-playlist-modal" class="modal hidden">
+    <div class="modal-overlay"></div>
+    <div class="modal-content">
+      <h3 class="modal-title">Add Playlist</h3>
+      <form id="add-playlist-form" class="form">
+        <div class="form-group">
+          <label>YouTube Playlist URL</label>
+          <input type="text" id="input-playlist-url" class="input-field"
+            placeholder="https://www.youtube.com/playlist?list=..." required />
+          <div id="url-validation-hint" class="url-validation-hint hidden"></div>
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label>Tag</label>
+            <div class="tag-input-wrapper">
+              <input type="text" id="input-playlist-tag" class="input-field" placeholder="Type a tag or pick below..."
+                autocomplete="off" />
+              <div id="tag-suggestions" class="tag-suggestions hidden"></div>
+            </div>
+          </div>
+          <div class="form-group">
+            <label>Priority</label>
+            <select id="input-playlist-priority" class="select-field">
+              <option value="Medium">Medium</option>
+              <option value="High">High</option>
+              <option value="Low">Low</option>
+            </select>
+          </div>
+        </div>
+        <div id="add-playlist-error" class="form-error hidden"></div>
+        <div id="add-playlist-loading" class="form-loading hidden">
+          <div class="spinner"></div><span>Fetching playlist data...</span>
+        </div>
+        <button type="submit" id="btn-submit-playlist" class="btn-primary btn-full">
+          <i class="fa-solid fa-plus"></i> Add Playlist
+        </button>
+      </form>
+    </div>
+  </div>
+
+  <!-- Pomodoro Widget -->
+  <div id="pomodoro-widget" class="pomodoro-widget hidden">
+    <div class="pomodoro-header">
+      <span class="pomodoro-mode" id="pomodoro-mode">Focus</span>
+      <span class="pomodoro-session-count" id="pomodoro-session-count">Session 1 of 4</span>
+      <div class="pomodoro-controls-top">
+        <button id="btn-pomodoro-settings" class="btn-icon-sm" title="Settings"><i
+            class="fa-solid fa-gear"></i></button>
+        <button id="btn-pomodoro-minimize" class="btn-icon-sm" title="Minimize"><i
+            class="fa-solid fa-minus"></i></button>
+        <button id="btn-pomodoro-close" class="btn-pomodoro-close" title="Close"><i
+            class="fa-solid fa-xmark"></i></button>
+      </div>
+    </div>
+    <div id="pomodoro-body" class="pomodoro-body">
+      <div class="pomodoro-timer-display">
+        <svg class="pomodoro-ring" viewBox="0 0 120 120">
+          <circle class="ring-bg" cx="60" cy="60" r="54" />
+          <circle id="pomodoro-ring-progress" class="ring-progress" cx="60" cy="60" r="54" />
+        </svg>
+        <span id="pomodoro-time" class="pomodoro-time">25:00</span>
+      </div>
+      <div class="pomodoro-actions">
+        <button id="btn-pomodoro-start" class="btn-primary btn-sm"><i class="fa-solid fa-play"></i> Start</button>
+        <button id="btn-pomodoro-pause" class="btn-secondary btn-sm hidden"><i class="fa-solid fa-pause"></i>
+          Pause</button>
+        <button id="btn-pomodoro-reset" class="btn-ghost btn-sm"><i class="fa-solid fa-rotate-right"></i></button>
+      </div>
+    </div>
+    <div id="pomodoro-settings-panel" class="pomodoro-settings hidden">
+      <h4>Timer Settings</h4>
+      <div class="form-group"><label>Focus (min)</label><input type="number" id="pomo-focus-min"
+          class="input-field input-sm" value="25" min="1" max="120" /></div>
+      <div class="form-group"><label>Break (min)</label><input type="number" id="pomo-break-min"
+          class="input-field input-sm" value="5" min="1" max="60" /></div>
+      <div class="form-group checkbox-group"><input type="checkbox" id="pomo-auto-start" /><label
+          for="pomo-auto-start">Auto-start with video</label></div>
+      <div class="form-group checkbox-group"><input type="checkbox" id="pomo-mute-sound" /><label
+          for="pomo-mute-sound">Mute sound notifications</label></div>
+      <button id="btn-pomo-save-settings" class="btn-primary btn-sm btn-full">Save</button>
+    </div>
+  </div>
+  <button id="btn-pomodoro-open" class="pomodoro-fab" title="Pomodoro Timer"><i
+      class="fa-solid fa-hourglass-half"></i></button>
+
+  <!-- Edit Profile Modal (UX-23) -->
+  <div id="edit-profile-modal" class="modal hidden">
+    <div class="modal-overlay" id="edit-profile-overlay"></div>
+    <div class="modal-content">
+      <button class="btn-close-modal" id="btn-close-edit-profile"><i class="fa-solid fa-xmark"></i></button>
+      <h3 class="modal-title">Edit Profile</h3>
+      <form id="edit-profile-form" class="form">
+        <div class="form-group">
+          <label>Display Name</label>
+          <input type="text" id="input-display-name" class="input-field" placeholder="Your name" required />
+        </div>
+        <hr style="border:none;border-top:1px solid var(--border);margin:12px 0" />
+        <div class="form-group">
+          <label>Daily Study Goal (minutes)</label>
+          <input type="number" id="input-edit-daily-goal" class="input-field" min="5" max="480" placeholder="60" />
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label>Pomodoro Focus (min)</label>
+            <input type="number" id="input-edit-pomo-focus" class="input-field" min="1" max="120" placeholder="25" />
+          </div>
+          <div class="form-group">
+            <label>Pomodoro Break (min)</label>
+            <input type="number" id="input-edit-pomo-break" class="input-field" min="1" max="60" placeholder="5" />
+          </div>
+        </div>
+        <button type="submit" class="btn-primary btn-full"><i class="fa-solid fa-check"></i> Save Changes</button>
+      </form>
+    </div>
+  </div>
+
+  <!-- Keyboard Shortcuts Modal -->
+  <div id="shortcuts-modal" class="modal hidden">
+    <div class="modal-overlay" id="shortcuts-modal-overlay"></div>
+    <div class="modal-content shortcuts-modal-content">
+      <button class="btn-close-modal" id="btn-close-shortcuts"><i class="fa-solid fa-xmark"></i></button>
+      <h3 class="modal-title"><i class="fa-solid fa-keyboard"></i> Keyboard Shortcuts</h3>
+      <table class="shortcuts-table">
+        <tbody>
+          <tr>
+            <td><kbd>R</kbd></td>
+            <td>Resume last video</td>
+          </tr>
+          <tr>
+            <td><kbd>N</kbd></td>
+            <td>New Playlist</td>
+          </tr>
+          <tr>
+            <td><kbd>?</kbd></td>
+            <td>Show this help</td>
+          </tr>
+          <tr>
+            <td><kbd>Esc</kbd></td>
+            <td>Close modal / dialog</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- XP Popup -->
+  <div id="xp-popup" class="xp-popup hidden" aria-live="assertive" aria-atomic="true">
+    <div class="xp-popup-content"><i class="fa-solid fa-star"></i><span id="xp-popup-text">+10 XP</span></div>
+  </div>
+
+  <!-- Badge Unlock -->
+  <div id="badge-unlock-modal" class="badge-unlock-modal hidden">
+    <div class="badge-unlock-content">
+      <div class="badge-unlock-icon"><i id="badge-unlock-icon" class="fa-solid fa-trophy"></i></div>
+      <h3>Achievement Unlocked!</h3>
+      <p id="badge-unlock-name"></p>
+      <p id="badge-unlock-desc" class="badge-unlock-desc"></p>
+      <button id="btn-badge-dismiss" class="btn-primary btn-sm">Awesome!</button>
+    </div>
+  </div>
+
+  <!-- Goal Modal -->
+  <div id="goal-modal" class="modal hidden">
+    <div class="modal-overlay" id="goal-modal-overlay"></div>
+    <div class="modal-content">
+      <button class="btn-close-modal" id="btn-close-goal"><i class="fa-solid fa-xmark"></i></button>
+      <h3 class="modal-title">Set Daily Study Goal</h3>
+      <form id="goal-form" class="form">
+        <div class="form-group">
+          <label>Goal (minutes per day)</label>
+          <input type="number" id="input-daily-goal" class="input-field" min="5" max="600" value="60" />
+        </div>
+        <button type="submit" class="btn-primary btn-full"><i class="fa-solid fa-check"></i> Save Goal</button>
+      </form>
+    </div>
+  </div>
+
+  <!-- UI-6: Styled Confirm Modal -->
+  <div id="confirm-modal" class="modal hidden">
+    <div class="modal-overlay" id="confirm-modal-overlay"></div>
+    <div class="modal-content">
+      <div class="confirm-icon"><i class="fa-solid fa-triangle-exclamation"></i></div>
+      <div class="confirm-title" id="confirm-title">Are you sure?</div>
+      <div class="confirm-message" id="confirm-message"></div>
+      <div class="confirm-actions">
+        <button class="btn-ghost btn-sm" id="btn-confirm-cancel">Cancel</button>
+        <button class="btn-primary btn-sm" id="btn-confirm-ok" style="background:var(--error)">Delete</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- FN-1: Edit Playlist Modal -->
+  <div id="edit-playlist-modal" class="modal hidden">
+    <div class="modal-overlay" id="edit-playlist-overlay"></div>
+    <div class="modal-content">
+      <button class="btn-close-modal" id="btn-close-edit-playlist"><i class="fa-solid fa-xmark"></i></button>
+      <h3 class="modal-title">Edit Playlist</h3>
+      <form id="edit-playlist-form" class="form">
+        <input type="hidden" id="edit-playlist-id" />
+        <div class="form-group">
+          <label>Tag</label>
+          <input type="text" id="edit-playlist-tag" class="input-field" placeholder="Tag..." />
+        </div>
+        <div class="form-group">
+          <label>Priority</label>
+          <select id="edit-playlist-priority" class="select-field">
+            <option value="Medium">Medium</option>
+            <option value="High">High</option>
+            <option value="Low">Low</option>
+          </select>
+        </div>
+        <button type="submit" class="btn-primary btn-full"><i class="fa-solid fa-check"></i> Save Changes</button>
+      </form>
+      <hr style="border:none;border-top:1px solid var(--border);margin:16px 0" />
+      <h4
+        style="font-size:.8rem;font-weight:600;color:var(--text-muted);text-transform:uppercase;letter-spacing:.3px;margin-bottom:12px">
+        Playlist Actions</h4>
+      <div class="edit-playlist-actions" style="display:flex;flex-wrap:wrap;gap:8px">
+        <button type="button" class="btn-ghost btn-sm" id="btn-sync-playlist"><i class="fa-solid fa-rotate"></i> Sync
+          with YouTube</button>
+        <button type="button" class="btn-ghost btn-sm" id="btn-bulk-complete"><i class="fa-solid fa-check-double"></i>
+          Mark All Done</button>
+        <button type="button" class="btn-ghost btn-sm" id="btn-bulk-incomplete"><i class="fa-solid fa-rotate-left"></i>
+          Reset All</button>
+        <button type="button" class="btn-ghost btn-sm" id="btn-export-data"><i class="fa-solid fa-download"></i> Export
+          Data</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Confetti Canvas -->
+  <canvas id="confetti-canvas" class="confetti-canvas"></canvas>
+
+  <!-- Sidebar Overlay -->
+  <div class="sidebar-overlay" id="sidebar-overlay"></div>
+
+  <button id="btn-add-playlist-fab" class="btn-fab hidden" title="Add Playlist">
+    <i class="fa-solid fa-plus"></i>
+  </button>
+
+  <!-- Feedback & Bug Report Modal -->
+  <div id="bug-report-modal" class="modal hidden">
+    <div class="modal-overlay" id="bug-report-overlay"></div>
+    <div class="modal-content bug-report-modal-content">
+      <button class="btn-close-modal" id="btn-close-bug-report"><i class="fa-solid fa-xmark"></i></button>
+      <h3 class="modal-title"><i class="fa-solid fa-comment-dots"></i> Feedback & Bug Report</h3>
+      <p class="bug-report-desc">Have feedback or found a bug? We'd love to hear from you.</p>
+      <form id="bug-report-form" class="form" action="https://formspree.io/f/mlgpewjl" method="POST">
+        <div class="form-group">
+          <label for="bug-type">Type</label>
+          <select name="type" id="bug-type" class="select-field">
+            <option value="Bug Report">🐛 Bug Report</option>
+            <option value="Feature Request">💡 Feature Request</option>
+            <option value="General Feedback">💬 General Feedback</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label for="bug-email">Your Email</label>
+          <input type="email" name="email" id="bug-email" class="input-field" placeholder="you@example.com" required />
+        </div>
+        <div class="form-group">
+          <label for="bug-subject">Subject</label>
+          <input type="text" name="subject" id="bug-subject" class="input-field" placeholder="Brief summary" required />
+        </div>
+        <div class="form-group">
+          <label for="bug-description">Description</label>
+          <textarea name="message" id="bug-description" class="input-field bug-textarea" rows="4"
+            placeholder="Tell us more..." required></textarea>
+        </div>
+        <input type="hidden" name="_source" value="PlayPulse Feedback" />
+        <button type="submit" id="btn-submit-bug" class="btn-primary btn-full"><i class="fa-solid fa-paper-plane"></i>
+          Submit</button>
+      </form>
+      <div id="bug-report-success" class="bug-report-success hidden">
+        <i class="fa-solid fa-circle-check"></i>
+        <p>Thank you! Your feedback has been submitted.</p>
+        <button class="btn-ghost btn-sm" id="btn-bug-report-done">Close</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Toast -->
+  <div id="toast-container" class="toast-container" aria-live="polite" aria-atomic="true"></div>
+
+  <!-- Scripts -->
+  <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore-compat.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+  <script src="https://www.youtube.com/iframe_api"></script>
+  <script src="js/firebase-init.js"></script>
+  <script src="js/constants.js"></script>
+  <script src="js/auth.js"></script>
+  <script src="js/email.js"></script>
+  <script src="js/firestore.js"></script>
+  <script src="js/youtube.js"></script>
+  <script src="js/player.js"></script>
+  <script src="js/notes.js"></script>
+  <script src="js/gamification.js"></script>
+  <script src="js/analytics.js"></script>
+  <script src="js/pomodoro.js"></script>
+  <script src="js/ui.js"></script>
+  <script>
+    // Confetti effect for level-up and badge unlock
+    function launchConfetti() {
+      const canvas = document.getElementById('confetti-canvas');
+      if (!canvas) return;
+      const ctx = canvas.getContext('2d');
+      canvas.width = window.innerWidth;
+      canvas.height = window.innerHeight;
+      const particles = [];
+      const colors = ['#6366f1', '#f59e0b', '#10b981', '#ef4444', '#8b5cf6', '#ec4899'];
+      for (let i = 0; i < 120; i++) {
+        particles.push({
+          x: canvas.width / 2 + (Math.random() - 0.5) * 200,
+          y: canvas.height / 2,
+          vx: (Math.random() - 0.5) * 12,
+          vy: Math.random() * -14 - 4,
+          color: colors[Math.floor(Math.random() * colors.length)],
+          size: Math.random() * 6 + 3,
+          rotation: Math.random() * 360,
+          rv: (Math.random() - 0.5) * 10,
+          gravity: 0.25,
+          life: 1
+        });
+      }
+      let frame;
+      function animate() {
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        let alive = false;
+        for (const p of particles) {
+          if (p.life <= 0) continue;
+          alive = true;
+          p.x += p.vx;
+          p.y += p.vy;
+          p.vy += p.gravity;
+          p.rotation += p.rv;
+          p.life -= 0.012;
+          ctx.save();
+          ctx.translate(p.x, p.y);
+          ctx.rotate((p.rotation * Math.PI) / 180);
+          ctx.globalAlpha = Math.max(0, p.life);
+          ctx.fillStyle = p.color;
+          ctx.fillRect(-p.size / 2, -p.size / 2, p.size, p.size * 0.6);
+          ctx.restore();
+        }
+        if (alive) frame = requestAnimationFrame(animate);
+        else ctx.clearRect(0, 0, canvas.width, canvas.height);
+      }
+      animate();
+      setTimeout(() => { cancelAnimationFrame(frame); ctx.clearRect(0, 0, canvas.width, canvas.height); }, 4000);
+    }
+  </script>
+  <script src="js/dashboard.js"></script>
+  <script src="js/playlist.js"></script>
+  <script>
+    // Bug Report Modal Logic
+    (function () {
+      const modal = document.getElementById('bug-report-modal');
+      const overlay = document.getElementById('bug-report-overlay');
+      const form = document.getElementById('bug-report-form');
+      const successEl = document.getElementById('bug-report-success');
+      const closeBtn = document.getElementById('btn-close-bug-report');
+      const doneBtn = document.getElementById('btn-bug-report-done');
+      const triggerProfile = document.getElementById('btn-report-bug-profile');
+
+      function openModal() { modal && modal.classList.remove('hidden'); }
+      function closeModal() {
+        if (!modal) return;
+        modal.classList.add('hidden');
+        // Reset after close
+        setTimeout(() => {
+          form.classList.remove('hidden');
+          successEl.classList.add('hidden');
+          form.reset();
+        }, 300);
+      }
+
+      if (triggerProfile) triggerProfile.addEventListener('click', openModal);
+      if (closeBtn) closeBtn.addEventListener('click', closeModal);
+      if (doneBtn) doneBtn.addEventListener('click', closeModal);
+      if (overlay) overlay.addEventListener('click', closeModal);
+
+      if (form) {
+        form.addEventListener('submit', async (e) => {
+          e.preventDefault();
+          const btn = form.querySelector('#btn-submit-bug');
+          btn.disabled = true;
+          btn.innerHTML = '<div class="spinner" style="width:16px;height:16px;border-width:2px"></div> Sending...';
+          try {
+            const res = await fetch(form.action, {
+              method: 'POST',
+              body: new FormData(form),
+              headers: { 'Accept': 'application/json' }
+            });
+            if (res.ok) {
+              form.classList.add('hidden');
+              successEl.classList.remove('hidden');
+            } else {
+              throw new Error('Failed');
+            }
+          } catch (err) {
+            btn.disabled = false;
+            btn.innerHTML = '<i class="fa-solid fa-paper-plane"></i> Send Report';
+            alert('Something went wrong. Please try again.');
+          }
+        });
+      }
+
+      // Close on Escape
+      document.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape' && modal && !modal.classList.contains('hidden')) closeModal();
+      });
+    })();
+  </script>
+  <script src="js/app.js"></script>
+</body>
+
+</html>

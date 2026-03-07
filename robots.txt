@@ -1,0 +1,14 @@
+User-agent: *
+Allow: /
+Allow: /index.html
+Allow: /about.html
+Allow: /help.html
+
+# Privacy and Terms are okay but less critical for ranking
+Allow: /privacy.html
+Allow: /terms.html
+
+# App is behind auth and not useful for SEO ranking contents
+Disallow: /app.html
+
+Sitemap: https://playpulse.app/sitemap.xml

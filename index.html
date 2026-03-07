@@ -1,0 +1,487 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>PlayPulse | Turn YouTube Playlists into Trackable Courses</title>
+  <meta name="description"
+    content="PlayPulse | The ultimate tool to turn any YouTube playlist into a structured, trackable course. Mark progress, take notes, earn XP, and stay focused with a built-in Pomodoro timer." />
+  <meta name="keywords"
+    content="YouTube playlist tracker, study tracker, online learning, YouTube course creator, productivity tool, Pomodoro timer, learning analytics, PlayPulse" />
+  <meta name="author" content="PlayPulse" />
+  <link rel="canonical" href="https://playpulse.app/" />
+
+  <!-- Open Graph / Facebook -->
+  <meta property="og:type" content="website" />
+  <meta property="og:url" content="https://playpulse.app/" />
+  <meta property="og:title" content="PlayPulse | Learn Smarter, Track Everything" />
+  <meta property="og:description"
+    content="Turn any YouTube playlist into a trackable course. Free forever. Progress tracking, notes, analytics, and more." />
+  <meta property="og:image" content="https://playpulse.app/assets/social-preview.png" />
+  <meta property="og:site_name" content="PlayPulse" />
+  <meta property="og:locale" content="en_US" />
+
+  <!-- Twitter -->
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:url" content="https://playpulse.app/" />
+  <meta name="twitter:title" content="PlayPulse | Learn Smarter, Track Everything" />
+  <meta name="twitter:description"
+    content="Turn any YouTube playlist into a trackable course. Free forever. Progress tracking, notes, analytics, and more." />
+  <meta name="twitter:image" content="https://playpulse.app/assets/social-preview.png" />
+
+  <!-- Accessibility & Theme -->
+  <meta name="color-scheme" content="dark light" />
+  <meta name="theme-color" content="#2563eb" />
+
+  <!-- Favicons -->
+  <link rel="icon" type="image/png" href="favicon/favicon-96x96.png" sizes="96x96" />
+  <link rel="icon" type="image/svg+xml" href="favicon/favicon.svg" />
+  <link rel="shortcut icon" href="favicon/favicon.ico" />
+  <link rel="apple-touch-icon" sizes="180x180" href="favicon/apple-touch-icon.png" />
+  <link rel="manifest" href="manifest.json" />
+
+  <!-- Fonts & Icons -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap"
+    rel="stylesheet" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" />
+
+  <!-- Stylesheets -->
+  <link rel="stylesheet" href="css/style.css" />
+  <link rel="stylesheet" href="css/landing.css" />
+
+  <!-- Structured Data (Schema.org) -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "WebApplication",
+    "name": "PlayPulse",
+    "url": "https://playpulse.app/",
+    "description": "Turn any YouTube playlist into a trackable course. Mark progress, take notes, stay focused.",
+    "applicationCategory": "EducationApplication, ProductivityApplication",
+    "operatingSystem": "All",
+    "offers": {
+      "@type": "Offer",
+      "price": "0",
+      "priceCurrency": "USD"
+    },
+    "featureList": [
+      "Playlist Tracking",
+      "Built-in Player",
+      "Analytics",
+      "Pomodoro Timer",
+      "Video Notes",
+      "XP & Streaks"
+    ]
+  }
+  </script>
+
+  <script>document.documentElement.setAttribute('data-theme', localStorage.getItem('playpulse_theme') || (matchMedia('(prefers-color-scheme:dark)').matches ? 'dark' : 'light'));</script>
+</head>
+
+<body class="landing-body">
+
+  <!-- Skip to content link (UX-26) -->
+  <a href="#main-content" class="skip-link">Skip to main content</a>
+
+  <!-- ==================== NAVBAR ==================== -->
+  <nav class="landing-nav" id="landing-nav">
+    <div class="nav-container">
+      <a href="index.html" class="nav-brand">
+        <img src="favicon/favicon.svg" alt="PlayPulse" class="nav-logo" />
+        <span>PlayPulse</span>
+      </a>
+      <div class="nav-links" id="nav-links">
+        <a href="#features">Features</a>
+        <a href="#how-it-works">How It Works</a>
+        <a href="#faq">FAQ</a>
+      </div>
+      <div class="nav-actions">
+        <button id="btn-theme-toggle-landing" class="btn-theme-toggle" title="Toggle theme"
+          aria-label="Switch to light mode" aria-pressed="false">
+          <i class="fa-solid fa-moon"></i>
+        </button>
+        <button id="btn-landing-login" class="btn-primary btn-nav-cta auth-signed-out">
+          <i class="fa-brands fa-google"></i> Get Started
+        </button>
+        <a href="app.html" id="btn-landing-goto" class="btn-primary btn-nav-cta auth-signed-in hidden">
+          <i class="fa-solid fa-arrow-right"></i> Open Dashboard
+        </a>
+      </div>
+      <button class="nav-mobile-toggle" id="nav-mobile-toggle" aria-label="Open navigation menu" aria-expanded="false"
+        aria-controls="nav-links">
+        <i class="fa-solid fa-bars"></i>
+      </button>
+    </div>
+  </nav>
+
+  <!-- ==================== HERO ==================== -->
+  <section class="hero" id="main-content">
+    <div class="hero-inner">
+      <div class="hero-text">
+        <h1 class="hero-title">
+          Stop watching.<br />
+          <span class="gradient-text">Start learning.</span>
+        </h1>
+        <p class="hero-subtitle">
+          Turn any YouTube playlist into a trackable course.
+          Mark progress, take notes, stay focused - all in one place.
+        </p>
+        <div class="hero-cta-group">
+          <button id="btn-hero-login" class="btn-primary btn-lg auth-signed-out">
+            <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" alt=""
+              class="btn-google-icon" />
+            Start Free with Google
+          </button>
+          <a href="app.html" id="btn-hero-goto" class="btn-primary btn-lg auth-signed-in hidden">
+            <i class="fa-solid fa-arrow-right"></i> Go to Dashboard
+          </a>
+        </div>
+        <p class="hero-note">Free forever. No credit card needed.</p>
+        <div class="trust-bar">
+          <span class="trust-item"><i class="fa-solid fa-check"></i> Free forever</span>
+          <span class="trust-item"><i class="fa-solid fa-check"></i> Google sign-in</span>
+          <span class="trust-item"><i class="fa-solid fa-check"></i> Your data stays yours</span>
+        </div>
+      </div>
+      <div class="hero-visual">
+        <div class="hero-mockup">
+          <div class="mockup-topbar">
+            <div class="mockup-dots"><span></span><span></span><span></span></div>
+            <span class="mockup-url">playpulse.app/dashboard</span>
+          </div>
+          <div class="mockup-body">
+            <div class="mockup-sidebar-col">
+              <div class="mockup-nav-block active"><i class="fa-solid fa-gauge-high"></i></div>
+              <div class="mockup-nav-block"><i class="fa-solid fa-list"></i></div>
+              <div class="mockup-nav-block"><i class="fa-solid fa-chart-line"></i></div>
+              <div class="mockup-nav-block"><i class="fa-solid fa-user"></i></div>
+            </div>
+            <div class="mockup-main">
+              <div class="mockup-stat-row">
+                <div class="mockup-stat-box"><span class="mockup-stat-val">47m</span><span
+                    class="mockup-stat-lbl">Today</span></div>
+                <div class="mockup-stat-box"><span class="mockup-stat-val">12</span><span
+                    class="mockup-stat-lbl">Videos</span></div>
+                <div class="mockup-stat-box"><span class="mockup-stat-val">🔥 5</span><span
+                    class="mockup-stat-lbl">Streak</span></div>
+              </div>
+              <div class="mockup-card-row">
+                <div class="mockup-card">
+                  <div class="mockup-thumb"><i class="fa-solid fa-play mockup-play-icon"></i></div>
+                  <div class="mockup-card-body">
+                    <div class="mockup-line long">DSA Playlist</div>
+                    <div class="mockup-line short">18 / 25 videos</div>
+                    <div class="mockup-bar">
+                      <div class="mockup-fill" style="width:72%"></div>
+                    </div>
+                    <span class="mockup-pct">72%</span>
+                  </div>
+                </div>
+                <div class="mockup-card">
+                  <div class="mockup-thumb"><i class="fa-solid fa-play mockup-play-icon"></i></div>
+                  <div class="mockup-card-body">
+                    <div class="mockup-line long">React Course</div>
+                    <div class="mockup-line short">7 / 20 videos</div>
+                    <div class="mockup-bar">
+                      <div class="mockup-fill" style="width:35%"></div>
+                    </div>
+                    <span class="mockup-pct">35%</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ==================== FEATURES ==================== -->
+  <section class="section" id="features">
+    <div class="container">
+      <div class="section-head">
+        <h2>Everything you need to<br />finish what you start.</h2>
+        <p>One app. Every tool a YouTube learner could ask for.</p>
+      </div>
+      <div class="features-grid">
+        <div class="feature-card fade-in">
+          <div class="feature-icon blue"><i class="fa-solid fa-list-check"></i></div>
+          <h3>Playlist Tracking</h3>
+          <p>Import any YouTube playlist. Track every video, see your progress grow in real time.</p>
+        </div>
+        <div class="feature-card fade-in">
+          <div class="feature-icon blue"><i class="fa-solid fa-circle-play"></i></div>
+          <h3>Built-in Player</h3>
+          <p>Watch videos inside the app. Auto-marks as complete when you finish.</p>
+        </div>
+        <div class="feature-card fade-in">
+          <div class="feature-icon green"><i class="fa-solid fa-chart-line"></i></div>
+          <h3>Analytics</h3>
+          <p>Weekly study graphs, total hours, completion rates - see exactly how you're doing.</p>
+        </div>
+        <div class="feature-card fade-in">
+          <div class="feature-icon green"><i class="fa-solid fa-hourglass-half"></i></div>
+          <h3>Pomodoro Timer</h3>
+          <p>Built-in focus timer. Set custom durations. Stays in your topbar while you study.</p>
+        </div>
+        <div class="feature-card fade-in">
+          <div class="feature-icon blue"><i class="fa-solid fa-sticky-note"></i></div>
+          <h3>Video Notes</h3>
+          <p>Take rich-text notes per video. Auto-saved to the cloud - access from anywhere.</p>
+        </div>
+        <div class="feature-card fade-in">
+          <div class="feature-icon green"><i class="fa-solid fa-trophy"></i></div>
+          <h3>XP & Streaks</h3>
+          <p>Earn XP, maintain streaks, unlock badges. Learning finally feels rewarding.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ==================== HOW IT WORKS ==================== -->
+  <section class="section section-alt" id="how-it-works">
+    <div class="container">
+      <div class="section-head">
+        <h2>Three steps. That's it.</h2>
+        <p>No setup, no configuration, no learning curve.</p>
+      </div>
+      <div class="steps">
+        <div class="step fade-in">
+          <div class="step-num">1</div>
+          <h3>Sign in with Google</h3>
+          <p>One click. No passwords, no forms. Your data syncs everywhere instantly.</p>
+        </div>
+        <div class="step-divider"></div>
+        <div class="step fade-in">
+          <div class="step-num">2</div>
+          <h3>Paste a playlist URL</h3>
+          <p>Drop any YouTube playlist link. We fetch all videos, thumbnails, and durations for you.</p>
+        </div>
+        <div class="step-divider"></div>
+        <div class="step fade-in">
+          <div class="step-num">3</div>
+          <h3>Watch & track</h3>
+          <p>Play videos, mark complete, take notes, earn XP. Watch your progress bar hit 100%.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ==================== FAQ ==================== -->
+  <section class="section" id="faq">
+    <div class="container container-narrow">
+      <div class="section-head">
+        <h2>Questions? Answered.</h2>
+      </div>
+      <div class="faq-list">
+        <div class="faq-item fade-in">
+          <button class="faq-question">
+            <span>Is it really free?</span>
+            <i class="fa-solid fa-chevron-down"></i>
+          </button>
+          <div class="faq-answer">
+            <p>Yes, 100% free. No hidden fees, no premium tier. Built as an open-source project.</p>
+          </div>
+        </div>
+        <div class="faq-item fade-in">
+          <button class="faq-question">
+            <span>Do I need a YouTube API key?</span>
+            <i class="fa-solid fa-chevron-down"></i>
+          </button>
+          <div class="faq-answer">
+            <p>No. The app handles all API interactions for you. Just paste a playlist link and go.</p>
+          </div>
+        </div>
+        <div class="faq-item fade-in">
+          <button class="faq-question">
+            <span>Is my data safe?</span>
+            <i class="fa-solid fa-chevron-down"></i>
+          </button>
+          <div class="faq-answer">
+            <p>Your data is stored securely in Firebase. We use Google Authentication - no passwords stored on our end.
+            </p>
+          </div>
+        </div>
+        <div class="faq-item fade-in">
+          <button class="faq-question">
+            <span>Does it work on mobile?</span>
+            <i class="fa-solid fa-chevron-down"></i>
+          </button>
+          <div class="faq-answer">
+            <p>Yes. Fully responsive on phones, tablets, and desktops.</p>
+          </div>
+        </div>
+        <div class="faq-item fade-in">
+          <button class="faq-question">
+            <span>Can I track multiple playlists?</span>
+            <i class="fa-solid fa-chevron-down"></i>
+          </button>
+          <div class="faq-answer">
+            <p>Absolutely. Add as many playlists as you want. Tag them, set priorities, organize however you like.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ==================== CTA ==================== -->
+  <section class="section section-alt cta-section">
+    <div class="container">
+      <div class="cta-block">
+        <h2>Ready to actually finish<br />a playlist?</h2>
+        <p>It takes 5 seconds to get started.</p>
+        <button id="btn-cta-login" class="btn-primary btn-lg auth-signed-out">
+          <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" alt=""
+            class="btn-google-icon" />
+          Start Free with Google
+        </button>
+        <a href="app.html" id="btn-cta-goto" class="btn-primary btn-lg auth-signed-in hidden">
+          <i class="fa-solid fa-arrow-right"></i> Go to Dashboard
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <!-- ==================== FOOTER ==================== -->
+  <footer class="landing-footer">
+    <div class="container footer-inner">
+      <div class="footer-brand">
+        <img src="favicon/favicon.svg" alt="" class="footer-logo-img" />
+        <span>PlayPulse</span>
+      </div>
+      <div class="footer-links">
+        <a href="privacy.html">Privacy Policy</a>
+        <a href="terms.html">Terms of Service</a>
+        <a href="about.html">About</a>
+        <a href="help.html">Help</a>
+        <a href="https://github.com" target="_blank" rel="noopener noreferrer"><i class="fa-brands fa-github"></i>
+          GitHub</a>
+        <a href="#" id="btn-report-bug-landing" class="footer-bug-link"><i class="fa-solid fa-comment-dots"></i>
+          Feedback & Bug Report</a>
+      </div>
+      <p class="footer-copy">&copy; 2026 PlayPulse</p>
+    </div>
+  </footer>
+
+  <!-- Feedback & Bug Report Modal -->
+  <div id="bug-report-modal" class="modal hidden">
+    <div class="modal-overlay" id="bug-report-overlay"></div>
+    <div class="modal-content bug-report-modal-content">
+      <button class="btn-close-modal" id="btn-close-bug-report"><i class="fa-solid fa-xmark"></i></button>
+      <h3 class="modal-title"><i class="fa-solid fa-comment-dots"></i> Feedback & Bug Report</h3>
+      <p class="bug-report-desc">Have feedback or found a bug? We'd love to hear from you.</p>
+      <form id="bug-report-form" class="form" action="https://formspree.io/f/mlgpewjl" method="POST">
+        <div class="form-group">
+          <label for="bug-type">Type</label>
+          <select name="type" id="bug-type" class="select-field">
+            <option value="Bug Report">🐛 Bug Report</option>
+            <option value="Feature Request">💡 Feature Request</option>
+            <option value="General Feedback">💬 General Feedback</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label for="bug-email">Your Email</label>
+          <input type="email" name="email" id="bug-email" class="input-field" placeholder="you@example.com" required />
+        </div>
+        <div class="form-group">
+          <label for="bug-subject">Subject</label>
+          <input type="text" name="subject" id="bug-subject" class="input-field" placeholder="Brief summary" required />
+        </div>
+        <div class="form-group">
+          <label for="bug-description">Description</label>
+          <textarea name="message" id="bug-description" class="input-field bug-textarea" rows="4"
+            placeholder="Tell us more..." required></textarea>
+        </div>
+        <input type="hidden" name="_source" value="PlayPulse Feedback" />
+        <button type="submit" id="btn-submit-bug" class="btn-primary btn-full"><i class="fa-solid fa-paper-plane"></i>
+          Submit</button>
+      </form>
+      <div id="bug-report-success" class="bug-report-success hidden">
+        <i class="fa-solid fa-circle-check"></i>
+        <p>Thank you! Your feedback has been submitted.</p>
+        <button class="btn-ghost btn-sm" id="btn-bug-report-done">Close</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ==================== TOAST ==================== -->
+  <div id="toast-container" class="toast-container"></div>
+
+  <!-- ==================== SCRIPTS ==================== -->
+  <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore-compat.js"></script>
+  <script src="js/firebase-init.js"></script>
+  <script src="js/constants.js"></script>
+  <script src="js/auth.js"></script>
+  <script src="js/email.js"></script>
+  <script src="js/ui.js"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      UI.initLanding();
+
+      // Bug Report Modal Logic
+      (function () {
+        const modal = document.getElementById('bug-report-modal');
+        const overlay = document.getElementById('bug-report-overlay');
+        const form = document.getElementById('bug-report-form');
+        const successEl = document.getElementById('bug-report-success');
+        const closeBtn = document.getElementById('btn-close-bug-report');
+        const doneBtn = document.getElementById('btn-bug-report-done');
+        const triggerLanding = document.getElementById('btn-report-bug-landing');
+
+        function openModal(e) { e && e.preventDefault(); modal && modal.classList.remove('hidden'); }
+        function closeModal() {
+          if (!modal) return;
+          modal.classList.add('hidden');
+          setTimeout(() => {
+            form.classList.remove('hidden');
+            successEl.classList.add('hidden');
+            form.reset();
+          }, 300);
+        }
+
+        if (triggerLanding) triggerLanding.addEventListener('click', openModal);
+        if (closeBtn) closeBtn.addEventListener('click', closeModal);
+        if (doneBtn) doneBtn.addEventListener('click', closeModal);
+        if (overlay) overlay.addEventListener('click', closeModal);
+
+        if (form) {
+          form.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const btn = form.querySelector('#btn-submit-bug');
+            btn.disabled = true;
+            btn.innerHTML = '<div class="spinner" style="width:16px;height:16px;border-width:2px"></div> Sending...';
+            try {
+              const res = await fetch(form.action, {
+                method: 'POST',
+                body: new FormData(form),
+                headers: { 'Accept': 'application/json' }
+              });
+              if (res.ok) {
+                form.classList.add('hidden');
+                successEl.classList.remove('hidden');
+              } else {
+                throw new Error('Failed');
+              }
+            } catch (err) {
+              btn.disabled = false;
+              btn.innerHTML = '<i class="fa-solid fa-paper-plane"></i> Send Report';
+              alert('Something went wrong. Please try again.');
+            }
+          });
+        }
+
+        document.addEventListener('keydown', (e) => {
+          if (e.key === 'Escape' && modal && !modal.classList.contains('hidden')) closeModal();
+        });
+      })();
+    });
+  </script>
+</body>
+
+</html>
