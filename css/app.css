@@ -1111,28 +1111,40 @@ html { scrollbar-gutter: stable; }
 .note-tool:hover { background: var(--bg-card-hover); color: var(--text-primary); }
 .note-tool.active { background: var(--bg-card-hover); color: var(--accent); }
 
-.note-timestamp {
+.note-timestamp, .note-link {
   display: inline-flex;
   align-items: center;
   cursor: pointer;
   color: var(--accent);
+  background: var(--accent-soft);
   font-weight: 600;
-  padding: 2px 6px;
-  background: var(--bg-tertiary);
-  border: 1px solid var(--border);
-  border-radius: 6px;
+  padding: 4px 8px;
+  border: 1px solid var(--accent);
+  border-radius: 20px;
   text-decoration: none;
-  font-size: 0.9em;
-  transition: var(--transition);
+  font-size: 0.85em;
+  transition: all 0.2s ease;
+  user-select: none;
+  margin: 0 2px;
 }
-.note-timestamp svg {
-  margin-right: 4px;
+
+.note-timestamp svg, .note-link svg {
+  margin-right: 6px;
   stroke: var(--accent);
+  transition: transform 0.2s ease;
 }
-.note-timestamp:hover {
-  background: var(--bg-card-hover);
+
+.note-timestamp:hover, .note-link:hover {
+  background: var(--accent);
+  color: #fff;
   border-color: var(--accent);
   text-decoration: none;
+  box-shadow: 0 2px 4px rgba(37, 99, 235, 0.2);
+}
+
+.note-timestamp:hover svg, .note-link:hover svg {
+  stroke: #fff;
+  transform: scale(1.1);
 }
 
 .notes-editor {
@@ -1175,19 +1187,7 @@ html { scrollbar-gutter: stable; }
 .notes-status.saved i {
   color: var(--success);
 }
-.note-timestamp {
-  color: var(--accent);
-  background: var(--accent-soft);
-  padding: 2px 6px;
-  border-radius: 4px;
-  font-family: monospace;
-  cursor: pointer;
-  text-decoration: none;
-  user-select: none;
-}
-.note-timestamp:hover {
-  text-decoration: underline;
-}
+
 
 /* ---------- Chart Container ---------- */
 .chart-container {

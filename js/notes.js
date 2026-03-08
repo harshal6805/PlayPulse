@@ -54,9 +54,30 @@ const Notes = (() => {
     }
   }
 
-  function setContext(playlistId, videoId) {
+  function setContext(playlistId, videoId, youtubeId) {
     currentPlaylistId = playlistId;
     currentVideoId = videoId;
+    const actualYoutubeId = youtubeId || videoId;
+    
+    // Auto-upgrade legacy SPAN timestamps in notes editor to native anchors
+    const editor = document.getElementById('notes-editor');
+    if (editor) {
+      editor.querySelectorAll('span.note-timestamp').forEach(span => {
+        const time = span.getAttribute('data-time');
+        const ytUrl = `https://www.youtube.com/watch?v=${actualYoutubeId}&t=${time}s`;
+        const a = document.createElement('a');
+        a.href = ytUrl;
+        a.target = '_blank';
+        a.className = 'note-timestamp';
+        a.setAttribute('contenteditable', 'false');
+        a.setAttribute('data-time', time);
+        // We use innerHTML to insert the SVG icon safely
+        a.innerHTML = `<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="margin-right:4px;"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>${span.innerHTML}`;
+        span.parentNode.replaceChild(a, span);
+      });
+      editor.dispatchEvent(new Event('input')); // force save
+    }
+
     const statusEl = document.getElementById('notes-status');
     if (statusEl) {
       statusEl.innerHTML = '<i class="fa-solid fa-cloud-check"></i> Saved';
@@ -161,11 +182,11 @@ const Notes = (() => {
         .pdf-content mark { background: #fef08a; padding: 2px 4px; border-radius: 4px; font-weight: 500; }
         .pdf-content b, .pdf-content strong { color: #0f172a; font-weight: 700; }
         .pdf-content .note-link {
-          display: inline-flex;
-          align-items: center;
+          display: inline-block;
+          vertical-align: middle;
           background: #eff6ff;
           color: #2563eb;
-          padding: 2px 8px;
+          padding: 4px 10px;
           border-radius: 6px;
           font-size: 14px;
           font-weight: 600;
@@ -189,7 +210,8 @@ const Notes = (() => {
         image:        { type: 'jpeg', quality: 0.98 },
         html2canvas:  { scale: 2, useCORS: true, logging: false },
         jsPDF:        { unit: 'mm', format: 'a4', orientation: 'portrait' },
-        pagebreak:    { mode: ['avoid-all', 'css', 'legacy'] }
+        pagebreak:    { mode: ['avoid-all', 'css', 'legacy'] },
+        enableLinks:  true
       };
 
       if (typeof html2pdf === 'undefined') {
@@ -221,7 +243,8 @@ const Notes = (() => {
         el.classList.add('note-link');
       } else {
         const time = el.getAttribute('data-time');
-        const ytUrl = `https://www.youtube.com/watch?v=${v.id}&t=${time}s`;
+        const actualYoutubeId = v.videoId || v.id;
+        const ytUrl = `https://www.youtube.com/watch?v=${actualYoutubeId}&t=${time}s`;
         
         const a = document.createElement('a');
         a.href = ytUrl;

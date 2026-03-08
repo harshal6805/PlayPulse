@@ -33,7 +33,7 @@ const Player = (() => {
 
     const notesEditor = document.getElementById('notes-editor');
     if (notesEditor) notesEditor.innerHTML = DOMPurify.sanitize(notes || '');
-    Notes.setContext(playlistId, videoDocId);
+    Notes.setContext(playlistId, videoDocId, videoId);
 
     const container = document.getElementById('youtube-player-container');
     container.innerHTML = '';
@@ -359,7 +359,10 @@ const Player = (() => {
       notesEditor.addEventListener('click', (e) => {
         const timestampEl = e.target.closest('.note-timestamp');
         if (timestampEl) {
-          e.preventDefault();
+          // Allow opening in new tab via Ctrl/Cmd click
+          if (!e.ctrlKey && !e.metaKey) {
+            e.preventDefault();
+          }
           const time = parseInt(timestampEl.getAttribute('data-time'), 10);
           if (!isNaN(time) && ytPlayer && ytPlayer.seekTo) {
             ytPlayer.seekTo(time, true);
