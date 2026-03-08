@@ -102,8 +102,11 @@ const Player = (() => {
     } else if (event.data === YT.PlayerState.ENDED) {
       stopWatchTimer();
       markCurrentCompleted();
-      // Auto-advance to next video after 3 seconds (UX-18)
-      setTimeout(() => navigateVideo(1), 3000);
+      // Auto-advance to next video if autoplay is enabled
+      const autoplayToggle = document.getElementById('toggle-autoplay');
+      if (autoplayToggle && autoplayToggle.checked) {
+        setTimeout(() => navigateVideo(1), 3000);
+      }
     }
   }
 
@@ -258,9 +261,11 @@ const Player = (() => {
     const closeBtn = document.getElementById('btn-close-player');
     const overlay = document.querySelector('#player-modal .modal-overlay');
     const markBtn = document.getElementById('btn-mark-completed');
-    const pipBtn = document.getElementById('btn-pip-toggle');
     const prevBtn = document.getElementById('btn-player-prev');
     const nextBtn = document.getElementById('btn-player-next');
+    const fullscreenBtn = document.getElementById('btn-fullscreen-toggle');
+    const insertTimestampBtn = document.getElementById('btn-insert-timestamp');
+    const notesEditor = document.getElementById('notes-editor');
     if (!closeBtn) return;
     closeBtn.addEventListener('click', close);
     if (overlay) overlay.addEventListener('click', close);
@@ -296,19 +301,63 @@ const Player = (() => {
       });
     }
 
-    if (pipBtn) {
-      pipBtn.addEventListener('click', () => {
-        const content = document.querySelector('.player-modal-content');
-        if (content) {
-          content.classList.toggle('pip-mode');
-          const isPip = content.classList.contains('pip-mode');
-          pipBtn.innerHTML = DOMPurify.sanitize(isPip
-            ? '<i class="fa-solid fa-expand"></i> Theater'
-            : '<i class="fa-solid fa-up-right-and-down-left-from-center"></i> PiP');
-          // In PiP mode, allow clicking behind the modal overlay
-          const modalOverlay = document.querySelector('#player-modal .modal-overlay');
-          if (modalOverlay) modalOverlay.style.pointerEvents = isPip ? 'none' : 'auto';
-          if (modalOverlay) modalOverlay.style.background = isPip ? 'transparent' : '';
+    // Fullscreen Toggle
+    if (fullscreenBtn) {
+      fullscreenBtn.addEventListener('click', () => {
+        const modalContent = document.querySelector('.player-modal-content');
+        if (!document.fullscreenElement) {
+          if (modalContent.requestFullscreen) {
+            modalContent.requestFullscreen();
+          } else if (modalContent.webkitRequestFullscreen) { /* Safari */
+            modalContent.webkitRequestFullscreen();
+          } else if (modalContent.msRequestFullscreen) { /* IE11 */
+            modalContent.msRequestFullscreen();
+          }
+          fullscreenBtn.innerHTML = DOMPurify.sanitize('<i class="fa-solid fa-compress"></i>');
+        } else {
+          if (document.exitFullscreen) {
+            document.exitFullscreen();
+          }
+          fullscreenBtn.innerHTML = DOMPurify.sanitize('<i class="fa-solid fa-expand"></i>');
+        }
+      });
+      // Handle ESC key or native exit
+      document.addEventListener('fullscreenchange', () => {
+        if (!document.fullscreenElement && fullscreenBtn) {
+          fullscreenBtn.innerHTML = DOMPurify.sanitize('<i class="fa-solid fa-expand"></i>');
+        }
+      });
+    }
+
+    // Insert Timestamp Button
+    if (insertTimestampBtn) {
+      insertTimestampBtn.addEventListener('click', () => {
+        if (!ytPlayer || !ytPlayer.getCurrentTime) return;
+        const timeSec = Math.floor(ytPlayer.getCurrentTime());
+        const mins = Math.floor(timeSec / 60);
+        const secs = timeSec % 60;
+        const timeStr = `[${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}]`;
+        
+        const timestampHtml = `<span class="note-timestamp" contenteditable="false" data-time="${timeSec}">${timeStr}</span>&nbsp;`;
+        if (notesEditor) {
+          notesEditor.focus();
+          document.execCommand('insertHTML', false, timestampHtml);
+          // Manually trigger input event to force autosave
+          notesEditor.dispatchEvent(new Event('input'));
+        }
+      });
+    }
+
+    // Timestamp Click Listener in Editor
+    if (notesEditor) {
+      notesEditor.addEventListener('click', (e) => {
+        const timestampEl = e.target.closest('.note-timestamp');
+        if (timestampEl) {
+          e.preventDefault();
+          const time = parseInt(timestampEl.getAttribute('data-time'), 10);
+          if (!isNaN(time) && ytPlayer && ytPlayer.seekTo) {
+            ytPlayer.seekTo(time, true);
+          }
         }
       });
     }

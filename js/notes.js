@@ -12,19 +12,27 @@ const Notes = (() => {
     if (!editor) return; // Not on this page
     editor.addEventListener('input', onInput);
 
-    // Toolbar buttons — MED-1: replaced deprecated execCommand with Selection/Range API
     document.querySelectorAll('.note-tool').forEach(btn => {
-      btn.addEventListener('click', () => {
+      if (btn.id === 'btn-insert-timestamp') return; // Handled in player.js
+      btn.addEventListener('click', (e) => {
+        e.preventDefault();
         const cmd = btn.dataset.cmd;
-        applyFormatCommand(cmd);
-        editor.focus();
+        if (cmd) {
+          const arg = btn.dataset.arg || null;
+          document.execCommand(cmd, false, arg);
+          editor.focus();
+          updateToolbarState();
+        }
       });
     });
+
+    // Monitor cursor/selection changes to toggle active toolbar formatting
+    document.addEventListener('selectionchange', updateToolbarState);
 
     // Export notes button
     const exportBtn = document.getElementById('btn-export-notes');
     if (exportBtn) {
-      exportBtn.addEventListener('click', exportNotesAsMarkdown);
+      exportBtn.addEventListener('click', exportNotesAsPDF);
     }
 
     // FN-5: Notes search (highlight matching text)
@@ -38,14 +46,59 @@ const Notes = (() => {
     }
   }
 
+  function updateToolbarState() {
+    const editor = document.getElementById('notes-editor');
+    if (!editor) return;
+    
+    // Safety check if selection is inside editor
+    const sel = window.getSelection();
+    if (!sel || !sel.rangeCount) return;
+    
+    let isInside = false;
+    let node = sel.getRangeAt(0).commonAncestorContainer;
+    while (node && node.nodeType === Node.ELEMENT_NODE || node && node.nodeType === Node.TEXT_NODE) {
+      if (node === editor) { isInside = true; break; }
+      node = node.parentNode;
+    }
+    
+    if (!isInside) return;
+
+    document.querySelectorAll('.note-tool').forEach(btn => {
+      const cmd = btn.dataset.cmd;
+      if (!cmd) return;
+      
+      let isActive = false;
+      if (cmd === 'formatBlock') {
+        const arg = btn.dataset.arg;
+        if (arg) {
+          const val = document.queryCommandValue('formatBlock');
+          isActive = val && val.toUpperCase() === arg.toUpperCase();
+        }
+      } else if (['bold', 'italic', 'underline', 'insertUnorderedList', 'insertOrderedList'].includes(cmd)) {
+        isActive = document.queryCommandState(cmd);
+      }
+      
+      if (isActive) btn.classList.add('active');
+      else btn.classList.remove('active');
+    });
+  }
+
   function setContext(playlistId, videoId) {
     currentPlaylistId = playlistId;
     currentVideoId = videoId;
-    document.getElementById('notes-status').textContent = 'Saved';
+    const statusEl = document.getElementById('notes-status');
+    if (statusEl) {
+      statusEl.innerHTML = '<i class="fa-solid fa-cloud-check"></i> Saved';
+      statusEl.className = 'notes-status saved';
+    }
   }
 
   function onInput() {
-    document.getElementById('notes-status').textContent = 'Saving...';
+    const statusEl = document.getElementById('notes-status');
+    if (statusEl) {
+      statusEl.innerHTML = '<i class="fa-solid fa-spinner"></i> Saving...';
+      statusEl.className = 'notes-status saving';
+    }
     clearTimeout(saveTimeout);
     saveTimeout = setTimeout(save, 1500);
   }
@@ -57,89 +110,163 @@ const Notes = (() => {
     const html = typeof DOMPurify !== 'undefined' ? DOMPurify.sanitize(rawHtml) : rawHtml;
     try {
       await FirestoreOps.updateVideo(currentPlaylistId, currentVideoId, { notes: html });
-      document.getElementById('notes-status').textContent = 'Saved';
+      const statusEl = document.getElementById('notes-status');
+      if (statusEl) {
+        statusEl.innerHTML = '<i class="fa-solid fa-cloud-check"></i> Saved';
+        statusEl.className = 'notes-status saved';
+      }
     } catch (err) {
       console.error('Notes save error:', err);
-      document.getElementById('notes-status').textContent = 'Error saving';
+      const statusEl = document.getElementById('notes-status');
+      if (statusEl) {
+        statusEl.innerHTML = '<i class="fa-solid fa-circle-exclamation"></i> Error';
+        statusEl.className = 'notes-status error';
+      }
     }
   }
 
-  async function exportNotesAsMarkdown() {
-    if (!currentPlaylistId) {
-      showToast('No playlist context', 'warning');
+  async function exportNotesAsPDF() {
+    if (!currentPlaylistId || !currentVideoId) {
+      showToast('No active video context', 'warning');
       return;
     }
 
     try {
+      showToast('Generating PDF...', 'info');
       const videos = await FirestoreOps.getVideos(currentPlaylistId);
       const playlists = await FirestoreOps.getPlaylists();
       const playlist = playlists.find(p => p.id === currentPlaylistId);
-      const playlistTitle = playlist ? playlist.title : 'Playlist Notes';
-
-      let md = `# ${playlistTitle}\n\n`;
-
-      for (const v of videos) {
-        if (!v.notes) continue;
-        md += `## ${v.title || 'Untitled Video'}\n\n`;
-        md += htmlToMarkdown(v.notes) + '\n\n';
-      }
-
-      if (md.split('\n').length <= 3) {
-        showToast('No notes to export', 'info');
+      const playlistTitle = playlist ? playlist.title : 'Playlist';
+      
+      const currentVideo = videos.find(v => v.id === currentVideoId);
+      if (!currentVideo || !currentVideo.notes || currentVideo.notes.trim() === '') {
+        showToast('No notes to export for this video', 'info');
         return;
       }
 
-      // Download as .md file
-      const blob = new Blob([md], { type: 'text/markdown;charset=utf-8' });
-      const url = URL.createObjectURL(blob);
-      const a = document.createElement('a');
-      a.href = url;
-      a.download = `${playlistTitle.replace(/[^a-zA-Z0-9]/g, '_')}_notes.md`;
-      document.body.appendChild(a);
-      a.click();
-      document.body.removeChild(a);
-      URL.revokeObjectURL(url);
-      showToast('Notes exported!', 'success');
+      // Build the HTML wrapper
+      const wrapper = document.createElement('div');
+      wrapper.style.padding = '40px 50px';
+      wrapper.style.fontFamily = "'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif";
+      wrapper.style.color = '#1e293b';
+      wrapper.style.background = '#ffffff';
+
+      // Advanced SVG Logo for PlayPulse replaced with Favicon Apple-Touch Icon
+      const origin = window.location.origin.includes('localhost') || window.location.origin.includes('127.0.0.1') 
+          ? window.location.origin 
+          : 'https://' + window.location.hostname;
+      const logoHtml = `<img src="${origin}/favicon/apple-touch-icon.png" width="28" height="28" style="border-radius: 6px; box-shadow: 0 2px 4px rgba(0,0,0,0.1);" />`;
+
+      // Header Branding (Updated with deeper blue #2563eb / #3b82f6 theme instead of indigo)
+      wrapper.innerHTML = `
+        <div style="border-bottom: 2px solid #e2e8f0; padding-bottom: 24px; margin-bottom: 32px; display: flex; align-items: flex-start; justify-content: space-between;">
+          <div style="flex: 1;">
+            <h1 style="margin: 0 0 8px 0; color: #0f172a; font-size: 32px; font-weight: 800; letter-spacing: -0.5px;">${currentVideo.title || 'Video Notes'}</h1>
+            <p style="margin: 0 0 4px 0; color: #64748b; font-size: 15px; font-weight: 500;">Playlist: ${playlistTitle}</p>
+            <p style="margin: 0; color: #94a3b8; font-size: 13px;">Exported on ${new Date().toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric'})}</p>
+          </div>
+          <div style="display: flex; align-items: center; gap: 10px; background: #f8fafc; padding: 12px 14px; border-radius: 12px; border: 1px solid #e2e8f0;">
+            ${logoHtml}
+            <span style="font-weight: 800; font-size: 20px; color: #2563eb; letter-spacing: -0.5px;">PlayPulse</span>
+          </div>
+        </div>
+      `;
+
+      const videoHTML = formatNotesHTMLForPDF(currentVideo);
+      
+      const contentSection = document.createElement('div');
+      contentSection.style.fontSize = '16px';
+      contentSection.style.lineHeight = '1.7';
+      contentSection.style.color = '#334155';
+      
+      // Inject some CSS rules for blockquotes and code and lists
+      const styleNode = document.createElement('style');
+      styleNode.innerHTML = `
+        .pdf-content h1, .pdf-content h2, .pdf-content h3 { color: #0f172a; margin-top: 24px; margin-bottom: 12px; font-weight: 700; }
+        .pdf-content h3 { font-size: 20px; border-bottom: 1px solid #e2e8f0; padding-bottom: 6px; }
+        .pdf-content p { margin-bottom: 16px; }
+        .pdf-content ul, .pdf-content ol { margin-bottom: 16px; padding-left: 24px; }
+        .pdf-content li { margin-bottom: 8px; }
+        .pdf-content blockquote {
+          border-left: 4px solid #3b82f6;
+          background: #eff6ff;
+          padding: 12px 16px;
+          margin: 0 0 16px 0;
+          border-radius: 0 8px 8px 0;
+          color: #1e3a8a;
+          font-style: italic;
+        }
+        .pdf-content mark { background: #fef08a; padding: 2px 4px; border-radius: 4px; font-weight: 500; }
+        .pdf-content b, .pdf-content strong { color: #0f172a; font-weight: 700; }
+        .pdf-content .note-link {
+          display: inline-flex;
+          align-items: center;
+          background: #eff6ff;
+          color: #2563eb;
+          padding: 2px 8px;
+          border-radius: 6px;
+          font-size: 14px;
+          font-weight: 600;
+          text-decoration: none;
+          border: 1px solid #bfdbfe;
+          transition: all 0.2s;
+        }
+      `;
+      contentSection.appendChild(styleNode);
+      
+      const bodyWrapper = document.createElement('div');
+      bodyWrapper.className = 'pdf-content';
+      bodyWrapper.innerHTML = videoHTML;
+      contentSection.appendChild(bodyWrapper);
+      
+      wrapper.appendChild(contentSection);
+
+      const opt = {
+        margin:       [15, 15, 15, 15],
+        filename:     `${(currentVideo.title || 'notes').replace(/[^a-zA-Z0-9]/g, '_')}.pdf`,
+        image:        { type: 'jpeg', quality: 0.98 },
+        html2canvas:  { scale: 2, useCORS: true, logging: false },
+        jsPDF:        { unit: 'mm', format: 'a4', orientation: 'portrait' },
+        pagebreak:    { mode: ['avoid-all', 'css', 'legacy'] }
+      };
+
+      if (typeof html2pdf === 'undefined') {
+        throw new Error('PDF generator library not loaded');
+      }
+
+      html2pdf().set(opt).from(wrapper).save().then(() => {
+         // Done
+      }).catch(err => {
+         console.error('PDF generation error:', err);
+         showToast('Error generating PDF', 'error');
+      });
+
     } catch (err) {
       console.error('Export error:', err);
-      showToast('Failed to export notes', 'error');
+      showToast('Failed to prepare PDF data', 'error');
     }
   }
 
-  function htmlToMarkdown(html) {
-    let md = html;
-    // Convert bold
-    md = md.replace(/<b>(.*?)<\/b>/gi, '**$1**');
-    md = md.replace(/<strong>(.*?)<\/strong>/gi, '**$1**');
-    // Convert italic
-    md = md.replace(/<i>(.*?)<\/i>/gi, '*$1*');
-    md = md.replace(/<em>(.*?)<\/em>/gi, '*$1*');
-    // Convert ordered list items with numbering
-    md = md.replace(/<ol>(.*?)<\/ol>/gis, (match, inner) => {
-      let counter = 0;
-      return inner.replace(/<li>(.*?)<\/li>/gi, (m, content) => {
-        counter++;
-        return counter + '. ' + content;
-      });
+  function formatNotesHTMLForPDF(v) {
+    let html = v.notes || '';
+    const tempDiv = document.createElement('div');
+    tempDiv.innerHTML = typeof DOMPurify !== 'undefined' ? DOMPurify.sanitize(html) : html;
+    
+    // Create professional clickable timestamp buttons for PDF
+    tempDiv.querySelectorAll('.note-timestamp').forEach(span => {
+      const time = span.getAttribute('data-time');
+      const ytUrl = `https://www.youtube.com/watch?v=${v.id}&t=${time}s`;
+      
+      const a = document.createElement('a');
+      a.href = ytUrl;
+      a.target = '_blank';
+      a.className = 'note-link';
+      a.innerHTML = `<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="margin-right:4px;"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>${span.innerHTML}`;
+      
+      span.parentNode.replaceChild(a, span);
     });
-    // Convert remaining (unordered) list items
-    md = md.replace(/<li>(.*?)<\/li>/gi, '- $1');
-    // Remove ul/ol tags
-    md = md.replace(/<\/?ul>/gi, '');
-    md = md.replace(/<\/?ol>/gi, '');
-    // Convert br and div to newlines
-    md = md.replace(/<br\s*\/?>/gi, '\n');
-    md = md.replace(/<\/div>/gi, '\n');
-    md = md.replace(/<div>/gi, '');
-    md = md.replace(/<\/p>/gi, '\n');
-    md = md.replace(/<p>/gi, '');
-    // Strip remaining HTML tags
-    md = md.replace(/<[^>]+>/g, '');
-    // Decode common HTML entities
-    md = md.replace(/&amp;/g, '&').replace(/&lt;/g, '<').replace(/&gt;/g, '>').replace(/&quot;/g, '"').replace(/&#039;/g, "'");
-    // Clean up extra newlines
-    md = md.replace(/\n{3,}/g, '\n\n').trim();
-    return md;
+    
+    return tempDiv.innerHTML;
   }
 
   /* FN-5: Highlight matching text in notes editor */
@@ -171,51 +298,7 @@ const Notes = (() => {
     }
   }
 
-  /**
-   * MED-1: Modern replacement for document.execCommand.
-   * Supports: bold, italic, underline, insertOrderedList, insertUnorderedList.
-   */
-  function applyFormatCommand(cmd) {
-    const sel = window.getSelection();
-    if (!sel || sel.rangeCount === 0) return;
 
-    // List commands require execCommand (no pure Selection API equivalent)
-    // They are safe here since we control the command string entirely from data-cmd attributes
-    if (cmd === 'insertOrderedList' || cmd === 'insertUnorderedList') {
-      // eslint-disable-next-line no-deprecated -- no Selection API equivalent for list toggling
-      document.execCommand(cmd, false, null);
-      return;
-    }
-
-    const range = sel.getRangeAt(0);
-    if (!range || range.collapsed) return;
-
-    const tagMap = { bold: 'STRONG', italic: 'EM', underline: 'U' };
-    const tag = tagMap[cmd];
-    if (!tag) return;
-
-    // Check if selection is already wrapped in this tag — if so, unwrap it
-    const ancestor = range.commonAncestorContainer;
-    const existingEl = (ancestor.nodeType === 3 ? ancestor.parentElement : ancestor).closest(tag);
-    if (existingEl) {
-      // Unwrap: replace the element with its children
-      const parent = existingEl.parentNode;
-      while (existingEl.firstChild) parent.insertBefore(existingEl.firstChild, existingEl);
-      parent.removeChild(existingEl);
-      return;
-    }
-
-    // Wrap the selected content in the tag
-    const el = document.createElement(tag);
-    try {
-      range.surroundContents(el);
-    } catch {
-      // surroundContents fails on partial selections across element boundaries
-      // Fall back: extract, wrap, re-insert
-      el.appendChild(range.extractContents());
-      range.insertNode(el);
-    }
-  }
 
   return { init, setContext, save };
 })();
