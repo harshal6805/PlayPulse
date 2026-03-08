@@ -1112,18 +1112,27 @@ html { scrollbar-gutter: stable; }
 .note-tool.active { background: var(--bg-card-hover); color: var(--accent); }
 
 .note-timestamp {
+  display: inline-flex;
+  align-items: center;
   cursor: pointer;
   color: var(--accent);
   font-weight: 600;
-  padding: 0 4px;
+  padding: 2px 6px;
   background: var(--bg-tertiary);
-  border-radius: 4px;
+  border: 1px solid var(--border);
+  border-radius: 6px;
   text-decoration: none;
+  font-size: 0.9em;
   transition: var(--transition);
 }
+.note-timestamp svg {
+  margin-right: 4px;
+  stroke: var(--accent);
+}
 .note-timestamp:hover {
-  text-decoration: underline;
   background: var(--bg-card-hover);
+  border-color: var(--accent);
+  text-decoration: none;
 }
 
 .notes-editor {

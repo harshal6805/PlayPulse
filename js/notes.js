@@ -14,20 +14,28 @@ const Notes = (() => {
 
     document.querySelectorAll('.note-tool').forEach(btn => {
       if (btn.id === 'btn-insert-timestamp') return; // Handled in player.js
+      
+      // Prevent focus loss on toolbar click to fix list/format bugs on selected text
+      btn.addEventListener('mousedown', (e) => {
+        e.preventDefault(); 
+      });
+
       btn.addEventListener('click', (e) => {
         e.preventDefault();
         const cmd = btn.dataset.cmd;
         if (cmd) {
           const arg = btn.dataset.arg || null;
           document.execCommand(cmd, false, arg);
-          editor.focus();
-          updateToolbarState();
+          
+          // Only explicitly toggle active modes on click, no auto-highlighting
+          if (['bold', 'italic', 'underline'].includes(cmd)) {
+            btn.classList.toggle('active');
+          } else if (cmd === 'removeFormat') {
+            document.querySelectorAll('.note-tool').forEach(b => b.classList.remove('active'));
+          }
         }
       });
     });
-
-    // Monitor cursor/selection changes to toggle active toolbar formatting
-    document.addEventListener('selectionchange', updateToolbarState);
 
     // Export notes button
     const exportBtn = document.getElementById('btn-export-notes');
@@ -44,43 +52,6 @@ const Notes = (() => {
         searchDebounce = setTimeout(() => highlightSearch(searchInput.value.trim()), 250);
       });
     }
-  }
-
-  function updateToolbarState() {
-    const editor = document.getElementById('notes-editor');
-    if (!editor) return;
-    
-    // Safety check if selection is inside editor
-    const sel = window.getSelection();
-    if (!sel || !sel.rangeCount) return;
-    
-    let isInside = false;
-    let node = sel.getRangeAt(0).commonAncestorContainer;
-    while (node && node.nodeType === Node.ELEMENT_NODE || node && node.nodeType === Node.TEXT_NODE) {
-      if (node === editor) { isInside = true; break; }
-      node = node.parentNode;
-    }
-    
-    if (!isInside) return;
-
-    document.querySelectorAll('.note-tool').forEach(btn => {
-      const cmd = btn.dataset.cmd;
-      if (!cmd) return;
-      
-      let isActive = false;
-      if (cmd === 'formatBlock') {
-        const arg = btn.dataset.arg;
-        if (arg) {
-          const val = document.queryCommandValue('formatBlock');
-          isActive = val && val.toUpperCase() === arg.toUpperCase();
-        }
-      } else if (['bold', 'italic', 'underline', 'insertUnorderedList', 'insertOrderedList'].includes(cmd)) {
-        isActive = document.queryCommandState(cmd);
-      }
-      
-      if (isActive) btn.classList.add('active');
-      else btn.classList.remove('active');
-    });
   }
 
   function setContext(playlistId, videoId) {
@@ -187,15 +158,6 @@ const Notes = (() => {
         .pdf-content p { margin-bottom: 16px; }
         .pdf-content ul, .pdf-content ol { margin-bottom: 16px; padding-left: 24px; }
         .pdf-content li { margin-bottom: 8px; }
-        .pdf-content blockquote {
-          border-left: 4px solid #3b82f6;
-          background: #eff6ff;
-          padding: 12px 16px;
-          margin: 0 0 16px 0;
-          border-radius: 0 8px 8px 0;
-          color: #1e3a8a;
-          font-style: italic;
-        }
         .pdf-content mark { background: #fef08a; padding: 2px 4px; border-radius: 4px; font-weight: 500; }
         .pdf-content b, .pdf-content strong { color: #0f172a; font-weight: 700; }
         .pdf-content .note-link {
@@ -252,18 +214,23 @@ const Notes = (() => {
     const tempDiv = document.createElement('div');
     tempDiv.innerHTML = typeof DOMPurify !== 'undefined' ? DOMPurify.sanitize(html) : html;
     
-    // Create professional clickable timestamp buttons for PDF
-    tempDiv.querySelectorAll('.note-timestamp').forEach(span => {
-      const time = span.getAttribute('data-time');
-      const ytUrl = `https://www.youtube.com/watch?v=${v.id}&t=${time}s`;
-      
-      const a = document.createElement('a');
-      a.href = ytUrl;
-      a.target = '_blank';
-      a.className = 'note-link';
-      a.innerHTML = `<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="margin-right:4px;"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>${span.innerHTML}`;
-      
-      span.parentNode.replaceChild(a, span);
+    // Create professional clickable timestamp buttons for PDF (or retain newer <a> format)
+    tempDiv.querySelectorAll('.note-timestamp').forEach(el => {
+      if (el.tagName === 'A') {
+        el.classList.remove('note-timestamp');
+        el.classList.add('note-link');
+      } else {
+        const time = el.getAttribute('data-time');
+        const ytUrl = `https://www.youtube.com/watch?v=${v.id}&t=${time}s`;
+        
+        const a = document.createElement('a');
+        a.href = ytUrl;
+        a.target = '_blank';
+        a.className = 'note-link';
+        a.innerHTML = `<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="margin-right:4px;"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>${el.innerHTML}`;
+        
+        el.parentNode.replaceChild(a, el);
+      }
     });
     
     return tempDiv.innerHTML;

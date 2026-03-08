@@ -97,6 +97,11 @@ const Player = (() => {
   function onPlayerStateChange(event) {
     if (event.data === YT.PlayerState.PLAYING) {
       startWatchTimer();
+      // Enforce playback speed whenever it starts playing 
+      const savedSpeed = localStorage.getItem('playpulse_speed');
+      if (savedSpeed && ytPlayer && ytPlayer.setPlaybackRate) {
+        ytPlayer.setPlaybackRate(parseFloat(savedSpeed));
+      }
     } else if (event.data === YT.PlayerState.PAUSED) {
       stopWatchTimer();
     } else if (event.data === YT.PlayerState.ENDED) {
@@ -337,8 +342,9 @@ const Player = (() => {
         const mins = Math.floor(timeSec / 60);
         const secs = timeSec % 60;
         const timeStr = `[${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}]`;
-        
-        const timestampHtml = `<span class="note-timestamp" contenteditable="false" data-time="${timeSec}">${timeStr}</span>&nbsp;`;
+        const ytUrl = `https://www.youtube.com/watch?v=${currentVideoId}&t=${timeSec}s`;
+        const svgIcon = `<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>`;
+        const timestampHtml = `<a href="${ytUrl}" target="_blank" class="note-timestamp" contenteditable="false" data-time="${timeSec}">${svgIcon}${timeStr}</a>&nbsp;`;
         if (notesEditor) {
           notesEditor.focus();
           document.execCommand('insertHTML', false, timestampHtml);
