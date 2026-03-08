@@ -74,7 +74,8 @@ const Auth = (() => {
     try {
       const provider = new firebase.auth.GoogleAuthProvider();
       await auth.signInWithPopup(provider);
-      // onAuthStateChanged will handle the redirect
+      // Redirect to dashboard explicitly after user triggers a login
+      window.location.href = 'app.html';
     } catch (err) {
       console.error('Login error:', err);
       showToast(err.message || 'Login failed', 'error');
